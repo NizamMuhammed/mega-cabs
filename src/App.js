@@ -1,6 +1,9 @@
 import "./App.css";
 import api from "./api/axiosConfig";
 import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import Home from "./components/home/Home";
+import Layout from "./components/Layout";
 
 function App() {
   const [cabs, setCabs] = useState([]);
@@ -22,8 +25,10 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Cabs Data</h1>
-      <pre>{JSON.stringify(cabs, null, 2)}</pre> {/* Display cabs data */}
+      <Routes>
+        <Route path="/" element={<Layout />}></Route>
+        <Route path="/" element={<Home />}></Route>
+      </Routes>
     </div>
   );
 }
