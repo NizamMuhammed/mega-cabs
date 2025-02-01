@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import api from "./api/axiosConfig";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [cabs, setCabs] = useState([]);
+
+  // Fetch data from backend
+  const getCabs = async () => {
+    try {
+      const response = await api.get("/api/v1/cabs");
+      console.log(response.data);
+      setCabs(response.data); // Set fetched data in state
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getCabs(); // Fetch data when the component mounts
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Cabs Data</h1>
+      <pre>{JSON.stringify(cabs, null, 2)}</pre> {/* Display cabs data */}
     </div>
   );
 }
