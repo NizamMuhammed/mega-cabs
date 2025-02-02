@@ -1,7 +1,11 @@
-import React from "react";
+import Hero from "../hero/Hero";
 
-const Home = () => {
-  return <div>Welcome Home</div>;
+const Home = ({ cabs = [] }) => {
+  return (
+    <div>
+      <Hero cabs={cabs} />
+    </div>
+  );
 };
 
 export default Home;
