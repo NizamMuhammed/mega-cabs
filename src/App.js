@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./components/home/Home";
 import Layout from "./components/Layout";
+import Header from "./components/header/Header";
 
 function App() {
   const [cabs, setCabs] = useState([]);
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <div className="App">
+      <Header />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home cabs={cabs} />} />
