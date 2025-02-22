@@ -58,11 +58,8 @@ const Register = () => {
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)" }}>
       <Card sx={{ width: 450, p: 4, boxShadow: 8, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
         <CardContent>
-          <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-            <DirectionsCar sx={{ fontSize: 40, color: "#FFCC00" }} />
-          </Box>
           <Typography variant="h4" align="center" gutterBottom>
-            Mega City Cab - Register
+            Register Now
           </Typography>
 
           {successMessage && (

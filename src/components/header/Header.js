@@ -6,8 +6,13 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ isAuth }) => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Add logout logic here
+    navigate("/login");
+  };
 
   return (
     <Navbar bg="dark" expand="lg" className="py-2 shadow-sm" style={{ margin: 0, padding: 0 }}>
@@ -27,12 +32,20 @@ const Header = () => {
             </NavLink>
           </Nav>
           <div>
-            <Button variant="outline-light" className="me-2 px-4 py-2" onClick={() => navigate("/login")} style={{ fontSize: "16px" }}>
-              Login
-            </Button>
-            <Button variant="outline-light" className="px-4 py-2" onClick={() => navigate("/register")} style={{ fontSize: "16px" }}>
-              Register
-            </Button>
+            {isAuth ? (
+              <Button variant="outline-light" className="me-2 px-4 py-2" onClick={handleLogout} style={{ fontSize: "16px" }}>
+                Logout
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline-light" className="me-2 px-4 py-2" onClick={() => navigate("/login")} style={{ fontSize: "16px" }}>
+                  Login
+                </Button>
+                <Button variant="outline-light" className="px-4 py-2" onClick={() => navigate("/register")} style={{ fontSize: "16px" }}>
+                  Register
+                </Button>
+              </>
+            )}
           </div>
         </Navbar.Collapse>
       </Container>

@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./components/home/Home";
 import Layout from "./components/Layout";
-import Header from "./components/header/Header";
 import Reviews from "./components/reviewForm/Reviews";
-import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
-import Dashboard from "./components/Dashboard";
+import Login from "./Pages/auth/Login";
+import Register from "./Pages/auth/Register";
+import Dashboard from "./Pages/auth/Dashboard";
 
 function App() {
   const [cabs, setCabs] = useState();
@@ -45,7 +44,6 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home cabs={cabs} />} />
