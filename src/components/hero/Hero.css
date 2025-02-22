@@ -1,5 +1,6 @@
 .movie-carousel-container {
-  width: 100vw;
+  overflow-x: hidden; /* Prevents horizontal scroll */
+  width: 100%;
   background-color: black;
 }
 .movie-poster {
