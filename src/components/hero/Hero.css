@@ -1,78 +1,99 @@
-.movie-carousel-container {
-  overflow-x: hidden; /* Prevents horizontal scroll */
+.hero-container {
   width: 100%;
-  background-color: black;
+  background-color: #121212; /* Dark background for contrast */
 }
-.movie-poster {
-  height: 300px;
-  border: 1px solid gold;
+
+.carousel-slide {
+  position: relative;
+}
+
+.cab-card {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), var(--img);
+  height: 400px; /* Adjust height */
   border-radius: 10px;
   overflow: hidden;
 }
-.movie-poster > img {
-  height: 100%;
-  width: 100%;
-}
-.movie-card-container {
-  height: 550px;
-  background-color: black;
-}
-.movie-poster img {
-  background-color: white;
-  width: 300px; /* Adjust as needed */
-  height: 450px; /* Adjust as needed */
-  object-fit: scale-down; /* Ensures image is scaled without distortion */
-}
 
-.movie-card {
-  background-repeat: no-repeat;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 247, 0)), var(--img);
-}
-.movie-detail {
-  position: absolute;
-  top: 200px;
-  display: flex;
-  justify-content: space-evenly;
-  width: 100%;
-}
-.movie-title {
-  color: white;
-  display: flex;
-  align-items: center;
-}
-
-.movie-buttons-container {
+.cab-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 300px;
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  color: white;
+  padding: 10px;
+  width: 80%;
 }
 
-.play-button-icon-container {
-  padding: 0px;
-  margin: 0px;
-  width: 150px;
+.cab-image {
+  width: auto;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
 }
-.play-button-icon {
-  padding: 0px;
-  margin: 0px;
-  color: gold;
-  font-size: 3rem;
-  transition: 0.3s;
-  cursor: pointer;
+
+.cab-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.play-button-icon:hover {
-  font-size: 4rem;
-  color: white;
+
+.cab-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.cab-details h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.cab-details p {
+  font-size: 18px;
+  margin-top: 8px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.book-button {
+  margin-top: 20px;
+  background-color: #ffcc00; /* Gold color for the button */
+  color: black;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.book-button:hover {
+  background-color: #ff9900; /* Slightly darker gold */
 }
 
 @media only screen and (max-width: 800px) {
-  .movie-detail {
+  .cab-content {
     flex-direction: column;
     align-items: center;
     top: 20px;
+  }
+
+  .cab-image {
+    width: 150px;
+    height: 200px;
+  }
+
+  .cab-details h2 {
+    font-size: 20px;
+  }
+
+  .cab-details p {
+    font-size: 16px;
+  }
+
+  .book-button {
+    font-size: 14px;
   }
 }

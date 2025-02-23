@@ -5,10 +5,11 @@ import Header from "./header/Header";
 const Layout = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/dashboard";
+  const isBooking = location.pathname === "/book-cab";
 
   return (
     <div>
-      {!isDashboard && <Header />}
+      {!isDashboard && !isBooking && <Header />}
       <Outlet />
     </div>
   );
