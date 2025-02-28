@@ -27,9 +27,8 @@ const Login = () => {
       setSuccessMessage("Login successful!");
       localStorage.setItem("jwtToken", token);
 
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
+      navigate("/dashboard"); // navigate directly
+      window.location.reload(); // Force a page reload after successful login
     } catch (error) {
       console.error("Login Error:", error);
 
@@ -57,7 +56,16 @@ const Login = () => {
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)" }}>
-      <Card sx={{ width: 450, p: 4, boxShadow: 8, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
+      <Card
+        sx={{
+          width: 450,
+          p: 4,
+          boxShadow: 8,
+          bgcolor: "#252525",
+          color: "white",
+          borderRadius: 4,
+        }}
+      >
         <CardContent>
           <Typography variant="h4" align="center" gutterBottom>
             Login
@@ -107,7 +115,14 @@ const Login = () => {
               fullWidth
               variant="contained"
               disabled={loading}
-              sx={{ mt: 3, bgcolor: "#FFCC00", color: "black", "&:hover": { bgcolor: "#E6B800" }, fontSize: "16px", fontWeight: "bold" }}
+              sx={{
+                mt: 3,
+                bgcolor: "#FFCC00",
+                color: "black",
+                "&:hover": { bgcolor: "#E6B800" },
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
             >
               {loading ? <CircularProgress size={24} sx={{ color: "black" }} /> : "Login"}
             </Button>

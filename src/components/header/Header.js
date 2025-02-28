@@ -1,30 +1,30 @@
-import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import { Button } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent, Box, Link, Typography } from "@mui/material";
+import { NavLink, useNavigate, Link } from "react-router-dom";
+import { Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent, Box, Typography } from "@mui/material";
 
-const Header = ({ isAuth, userName }) => {
+const Header = ({ isAuth, userName, setIsAuth }) => {
+  //get the function from App.js
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Add logout logic here
-    navigate("/login");
-  };
-
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = React.useState(false); //added react.
 
   const handleLogoutClick = () => {
     setShowLogoutPopup(true);
   };
 
-  const confirmLogout = () => {
+  const handleConfirmLogout = () => {
+    //call setIsAuth when logging out
     setShowLogoutPopup(false);
-    handleLogout();
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userId");
+    setIsAuth(false); // Update isAuth state
+    navigate("/"); //no need to wait.
   };
 
   const cancelLogout = () => {
@@ -70,7 +70,9 @@ const Header = ({ isAuth, userName }) => {
                       {userName}
                     </Typography>
                   )}
-                  <Button color="inherit" component={Link} to="/logout">
+                  <Button color="inherit" onClick={handleLogoutClick}>
+                    {" "}
+                    {/* call handleLogoutClick */}
                     Logout
                   </Button>
                 </Box>
@@ -98,7 +100,7 @@ const Header = ({ isAuth, userName }) => {
           <Button onClick={cancelLogout} color="primary">
             No
           </Button>
-          <Button onClick={confirmLogout} color="primary" autoFocus>
+          <Button onClick={handleConfirmLogout} color="primary" autoFocus>
             Yes
           </Button>
         </DialogActions>

@@ -1,61 +1,35 @@
 import "./App.css";
-import api from "./api/axiosConfig";
-import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"; //corrected
 import Home from "./components/home/Home";
-import Layout from "./components/Layout";
-import Reviews from "./components/reviewForm/Reviews";
 import Login from "./Pages/auth/Login";
 import Register from "./Pages/auth/Register";
 import Dashboard from "./Pages/auth/Dashboard";
-import Booking from "./Pages/booking/Booking";
+import BookCab from "./Pages/booking/BookCab"; // Corrected import
 import Logout from "./Pages/auth/Logout";
+import Header from "./components/header/Header";
+import About from "./Pages/About";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [cabs, setCabs] = useState();
-  const [cab, setCab] = useState();
-  const [reviews, setReviews] = useState();
-
-  // Fetch data from backend
-  const getCabs = async () => {
-    try {
-      const response = await api.get("/api/v1/cabs");
-      console.log(response.data);
-      setCabs(response.data); // Set fetched data in state
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const getCabData = async (cabId) => {
-    try {
-      const response = await api.get(`/api/v1/cabs/${cabId}`);
-
-      const singleCab = response.data;
-
-      setMovie(singleCab);
-
-      setReviews(singleCab.reviews);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [isAuth, setIsAuth] = useState(false);
+  const userName = localStorage.getItem("userName");
 
   useEffect(() => {
-    getCabs();
+    const token = localStorage.getItem("jwtToken");
+    setIsAuth(token !== null);
   }, []);
 
   return (
     <div className="App">
+      <Header isAuth={isAuth} userName={userName} setIsAuth={setIsAuth} />
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Home cabs={cabs} />} />
-          <Route path="/Reviews/:cabId" element={<Reviews getCabData={getCabData} cab={cab} reviews={reviews} setReviews={setReviews} />}></Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/logout" element={<Logout />} /> {/* Add the new route */}
-          <Route path="/book-cab" element={<Booking />} />
-        </Route>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login setIsAuth={setIsAuth} />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/logout" element={<Logout setIsAuth={setIsAuth} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Login setIsAuth={setIsAuth} />} />
+        <Route path="/book-cab" element={isAuth ? <BookCab /> : <Login setIsAuth={setIsAuth} />} />
       </Routes>
     </div>
   );
