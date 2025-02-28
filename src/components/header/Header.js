@@ -70,9 +70,7 @@ const Header = ({ isAuth, userName, setIsAuth }) => {
                       {userName}
                     </Typography>
                   )}
-                  <Button color="inherit" onClick={handleLogoutClick}>
-                    {" "}
-                    {/* call handleLogoutClick */}
+                  <Button variant="outline-light" className="me-2 px-4 py-2" onClick={handleLogoutClick} style={{ fontSize: "16px" }}>
                     Logout
                   </Button>
                 </Box>

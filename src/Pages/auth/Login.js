@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import { Box, TextField, Button, Typography, Alert, Card, CardContent, CardActions, CircularProgress } from "@mui/material";
+import { Box, TextField, Button, Typography, Alert, Card, CardContent, CardActions, CircularProgress, Snackbar } from "@mui/material";
 
-const Login = () => {
+const Login = ({ setIsAuth }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,13 +30,17 @@ const Login = () => {
       });
 
       console.log("Login Response:", response.data);
-      const token = response.data.jwt; // Get the token from the 'jwt' field
+      const token = response.data.jwt;
+      const name = response.data.userName;
 
-      setSuccessMessage("Login successful!");
       localStorage.setItem("jwtToken", token);
-
-      navigate("/dashboard"); // navigate directly
-      window.location.reload(); // Force a page reload after successful login
+      localStorage.setItem("userName", name);
+      setIsAuth(true);
+      setSuccessMessage("Login successful!");
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
     } catch (error) {
       console.error("Login Error:", error);
 
@@ -38,6 +50,10 @@ const Login = () => {
           setErrorMessage("Invalid email or password");
         } else if (error.response.status === 400) {
           setErrorMessage(error.response.data ? error.response.data : "Bad Request");
+        } else if (error.response.status === 404) {
+          setErrorMessage("User not found");
+        } else if (error.response.status === 403) {
+          setErrorMessage("User account is disabled or locked");
         } else if (error.response.status === 500) {
           setErrorMessage("Internal Server Error. Please try again later.");
         } else {
@@ -56,26 +72,12 @@ const Login = () => {
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)" }}>
-      <Card
-        sx={{
-          width: 450,
-          p: 4,
-          boxShadow: 8,
-          bgcolor: "#252525",
-          color: "white",
-          borderRadius: 4,
-        }}
-      >
+      <Card sx={{ width: 450, p: 4, boxShadow: 8, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
         <CardContent>
           <Typography variant="h4" align="center" gutterBottom>
             Login
           </Typography>
 
-          {successMessage && (
-            <Alert severity="success" sx={{ mb: 2 }}>
-              {successMessage}
-            </Alert>
-          )}
           {errorMessage && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {errorMessage}
@@ -115,14 +117,7 @@ const Login = () => {
               fullWidth
               variant="contained"
               disabled={loading}
-              sx={{
-                mt: 3,
-                bgcolor: "#FFCC00",
-                color: "black",
-                "&:hover": { bgcolor: "#E6B800" },
-                fontSize: "16px",
-                fontWeight: "bold",
-              }}
+              sx={{ mt: 3, bgcolor: "#FFCC00", color: "black", "&:hover": { bgcolor: "#E6B800" }, fontSize: "16px", fontWeight: "bold" }}
             >
               {loading ? <CircularProgress size={24} sx={{ color: "black" }} /> : "Login"}
             </Button>
@@ -138,6 +133,13 @@ const Login = () => {
           </Typography>
         </CardActions>
       </Card>
+
+      {/* Snackbar for Success Message */}
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "right" }} sx={{ marginTop: 8 }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
