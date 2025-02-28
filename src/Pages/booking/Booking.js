@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axiosConfig";
 import Header from "../../components/header/Header";
-import { Container, TextField, MenuItem, Button, Typography, Box, Card, CardContent, Snackbar, Alert } from "@mui/material";
+import { Container, TextField, MenuItem, Button, Typography, Box, Card, CardContent, Snackbar, Alert, Grid, Paper, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -62,6 +62,7 @@ const Booking = () => {
 
   const handleBooking = async (values) => {
     try {
+      const userId = localStorage.getItem("userId"); // Get userId from local storage
       const bookingData = {
         pickupLocation: values.pickupLocation,
         dropLocation: values.dropLocation,
@@ -69,6 +70,7 @@ const Booking = () => {
         time: values.time,
         cabType: values.cabType,
         price,
+        userId, // Add userId to the booking data
       };
       const response = await api.post("/api/v1/bookings", bookingData);
       if (response.status === 201) {
@@ -110,11 +112,12 @@ const Booking = () => {
       <Header isAuth={true} />
 
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)" }}>
-        <Card sx={{ width: 450, p: 4, boxShadow: 8, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
-          <CardContent>
+        <Container maxWidth="sm">
+          <Paper elevation={3} sx={{ p: 3, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
             <Typography variant="h4" align="center" gutterBottom>
               Book a Cab
             </Typography>
+            <Divider sx={{ mb: 2, bgcolor: "#FFCC00" }} />
             <Formik
               initialValues={{
                 pickupLocation: "",
@@ -128,129 +131,152 @@ const Booking = () => {
             >
               {({ values, handleChange, handleBlur }) => (
                 <Form>
-                  <TextField
-                    select
-                    label="Pickup Location"
-                    name="pickupLocation"
-                    value={values.pickupLocation}
-                    onChange={(e) => {
-                      handleChange(e);
-                      calculatePrice(e.target.value, values.dropLocation);
-                    }}
-                    onBlur={handleBlur}
-                    fullWidth
-                    margin="normal"
-                    sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                    InputLabelProps={{ style: { color: "white" } }}
-                    inputProps={{ style: { color: "white" } }}
-                  >
-                    {locations.map((location) => (
-                      <MenuItem key={location.name} value={location.name}>
-                        {location.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  <ErrorMessage name="pickupLocation" component="div" style={{ color: "red" }} />
-                  <TextField
-                    select
-                    label="Drop Location"
-                    name="dropLocation"
-                    value={values.dropLocation}
-                    onChange={(e) => {
-                      handleChange(e);
-                      calculatePrice(values.pickupLocation, e.target.value);
-                    }}
-                    onBlur={handleBlur}
-                    fullWidth
-                    margin="normal"
-                    sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                    InputLabelProps={{ style: { color: "white" } }}
-                    inputProps={{ style: { color: "white" } }}
-                  >
-                    {locations.map((location) => (
-                      <MenuItem key={location.name} value={location.name} disabled={location.name === values.pickupLocation}>
-                        {location.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  <ErrorMessage name="dropLocation" component="div" style={{ color: "red" }} />
-                  <TextField
-                    label="Date"
-                    type="date"
-                    name="date"
-                    value={values.date}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    InputLabelProps={{ shrink: true, style: { color: "white" } }}
-                    fullWidth
-                    margin="normal"
-                    sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                    inputProps={{ style: { color: "white" } }}
-                  />
-                  <ErrorMessage name="date" component="div" style={{ color: "red" }} />
-                  <TextField
-                    label="Time"
-                    type="time"
-                    name="time"
-                    value={values.time}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    InputLabelProps={{ shrink: true, style: { color: "white" } }}
-                    fullWidth
-                    margin="normal"
-                    sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                    inputProps={{ style: { color: "white" } }}
-                  />
-                  <ErrorMessage name="time" component="div" style={{ color: "red" }} />
-                  <TextField
-                    select
-                    label="Cab Type"
-                    name="cabType"
-                    value={values.cabType}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    fullWidth
-                    margin="normal"
-                    sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                    InputLabelProps={{ style: { color: "white" } }}
-                    inputProps={{ style: { color: "white" } }}
-                  >
-                    {cabs.map((cab) => (
-                      <MenuItem key={cab.cabId} value={cab.cabName}>
-                        <img src={cab.cabImage} alt={`${cab.cabBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
-                        {cab.cabBrand} {cab.cabType} ({cab.cabCapacity} seats)
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  <ErrorMessage name="cabType" component="div" style={{ color: "red" }} />
-                  <Typography variant="h6" gutterBottom>
-                    Price: LKR {price}
-                  </Typography>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 3, bgcolor: "#FFCC00", color: "black", "&:hover": { bgcolor: "#E6B800" }, fontSize: "16px", fontWeight: "bold" }}
-                  >
-                    Book Now
-                  </Button>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        select
+                        label="Pickup Location"
+                        name="pickupLocation"
+                        value={values.pickupLocation}
+                        onChange={(e) => {
+                          handleChange(e);
+                          calculatePrice(e.target.value, values.dropLocation);
+                        }}
+                        onBlur={handleBlur}
+                        fullWidth
+                        margin="normal"
+                        sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
+                        InputLabelProps={{ style: { color: "white" } }}
+                        inputProps={{ style: { color: "white" } }}
+                      >
+                        {locations.map((location) => (
+                          <MenuItem key={location.name} value={location.name}>
+                            {location.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <ErrorMessage name="pickupLocation" component="div" style={{ color: "red" }} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        select
+                        label="Drop Location"
+                        name="dropLocation"
+                        value={values.dropLocation}
+                        onChange={(e) => {
+                          handleChange(e);
+                          calculatePrice(values.pickupLocation, e.target.value);
+                        }}
+                        onBlur={handleBlur}
+                        fullWidth
+                        margin="normal"
+                        sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
+                        InputLabelProps={{ style: { color: "white" } }}
+                        inputProps={{ style: { color: "white" } }}
+                      >
+                        {locations.map((location) => (
+                          <MenuItem key={location.name} value={location.name} disabled={location.name === values.pickupLocation}>
+                            {location.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <ErrorMessage name="dropLocation" component="div" style={{ color: "red" }} />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Date"
+                        type="date"
+                        name="date"
+                        value={values.date}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        InputLabelProps={{ shrink: true, style: { color: "white" } }}
+                        fullWidth
+                        margin="normal"
+                        sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
+                        inputProps={{ style: { color: "white" } }}
+                      />
+                      <ErrorMessage name="date" component="div" style={{ color: "red" }} />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Time"
+                        type="time"
+                        name="time"
+                        value={values.time}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        InputLabelProps={{ shrink: true, style: { color: "white" } }}
+                        fullWidth
+                        margin="normal"
+                        sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
+                        inputProps={{ style: { color: "white" } }}
+                      />
+                      <ErrorMessage name="time" component="div" style={{ color: "red" }} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        select
+                        label="Cab Type"
+                        name="cabType"
+                        value={values.cabType}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        fullWidth
+                        margin="normal"
+                        sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
+                        InputLabelProps={{ style: { color: "white" } }}
+                        inputProps={{ style: { color: "white" } }}
+                      >
+                        {cabs.map((cab) => (
+                          <MenuItem key={cab.cabId} value={cab.cabName}>
+                            <img src={cab.cabImage} alt={`${cab.cabBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
+                            {cab.cabBrand} {cab.cabType} ({cab.cabCapacity} seats)
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <ErrorMessage name="cabType" component="div" style={{ color: "red" }} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="h6" gutterBottom>
+                        Price: LKR {price}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{
+                          mt: 3,
+                          bgcolor: "#FFCC00",
+                          color: "black",
+                          "&:hover": { bgcolor: "#E6B800" },
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Book Now
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Form>
               )}
             </Formik>
-          </CardContent>
-        </Card>
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={3000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          sx={{ top: 80 }} // Adjust the top position
-        >
-          <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
-            Booking successful! Your price is Rs.{price}.00
-          </Alert>
-        </Snackbar>
+          </Paper>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={3000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            sx={{ top: 80 }} // Adjust the top position
+          >
+            <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
+              Booking successful! Your price is Rs.{price}.00
+            </Alert>
+          </Snackbar>
+        </Container>
       </Box>
     </div>
   );

@@ -14,25 +14,45 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage("");
     try {
       const response = await api.post("/api/v1/auth/login", {
         userEmailId: email,
         userPassword: password,
       });
-      console.log(response.data);
-      if (response.data) {
-        setSuccessMessage("Login successful!");
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
-      } else {
-        setErrorMessage("Invalid email or password");
-      }
+
+      console.log("Login Response:", response.data);
+      const token = response.data.jwt; // Get the token from the 'jwt' field
+
+      setSuccessMessage("Login successful!");
+      localStorage.setItem("jwtToken", token);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     } catch (error) {
-      setErrorMessage(error.response ? error.response.data : "An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      console.error("Login Error:", error);
+
+      if (error.response) {
+        console.error("Server Response:", error.response);
+        if (error.response.status === 401) {
+          setErrorMessage("Invalid email or password");
+        } else if (error.response.status === 400) {
+          setErrorMessage(error.response.data ? error.response.data : "Bad Request");
+        } else if (error.response.status === 500) {
+          setErrorMessage("Internal Server Error. Please try again later.");
+        } else {
+          setErrorMessage(`Server responded with error status: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        console.error("No Response Received:", error.request);
+        setErrorMessage("Network error. Please check your internet connection and try again.");
+      } else {
+        console.error("Error Setting Up Request:", error.message);
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     }
+    setLoading(false);
   };
 
   return (

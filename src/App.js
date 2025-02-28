@@ -9,6 +9,7 @@ import Login from "./Pages/auth/Login";
 import Register from "./Pages/auth/Register";
 import Dashboard from "./Pages/auth/Dashboard";
 import Booking from "./Pages/booking/Booking";
+import Logout from "./Pages/auth/Logout";
 
 function App() {
   const [cabs, setCabs] = useState();
@@ -52,6 +53,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/logout" element={<Logout />} /> {/* Add the new route */}
           <Route path="/book-cab" element={<Booking />} />
         </Route>
       </Routes>

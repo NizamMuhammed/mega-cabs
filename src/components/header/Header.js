@@ -6,9 +6,9 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent } from "@mui/material";
+import { Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent, Box, Link, Typography } from "@mui/material";
 
-const Header = ({ isAuth }) => {
+const Header = ({ isAuth, userName }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -64,9 +64,16 @@ const Header = ({ isAuth }) => {
             </Nav>
             <div>
               {isAuth ? (
-                <Button variant="outline-light" className="me-2 px-4 py-2" onClick={handleLogoutClick} style={{ fontSize: "16px" }}>
-                  Logout
-                </Button>
+                <Box display="flex" alignItems="center">
+                  {userName && (
+                    <Typography variant="body1" sx={{ mr: 2, color: "#FFCC00" }}>
+                      {userName}
+                    </Typography>
+                  )}
+                  <Button color="inherit" component={Link} to="/logout">
+                    Logout
+                  </Button>
+                </Box>
               ) : (
                 <>
                   <Button variant="outline-light" className="me-2 px-4 py-2" onClick={() => navigate("/login")} style={{ fontSize: "16px" }}>

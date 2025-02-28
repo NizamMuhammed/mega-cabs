@@ -38,20 +38,21 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
     try {
       const response = await api.post("/api/v1/auth/register", {
+        userName: username,
         userEmailId: email,
         userPassword: password,
-        userName: username || "DefaultUserName",
       });
-      console.log(response.data);
+      console.log("Registration Response:", response.data); // Check the response
       setSuccessMessage("Registration successful!");
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      setErrorMessage(error.response?.data || "An unexpected error occurred. Please try again.");
+      console.error("Registration Error:", error); // Log the full error for debugging
+      setErrorMessage(error.response?.data || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
