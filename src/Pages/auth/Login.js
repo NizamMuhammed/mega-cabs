@@ -32,15 +32,32 @@ const Login = ({ setIsAuth }) => {
       console.log("Login Response:", response.data);
       const token = response.data.jwt;
       const name = response.data.userName;
+      //const roles = response.data.roles.map(role => role.name); // Get the roles from the response
+      const roles = response.data.roles.map((role) => role); // Extracting role names // no need for the name
+      const userId = response.data.userId; // get the userId from the response
 
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("userName", name);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("roles", JSON.stringify(roles)); // Store roles as a string
       setIsAuth(true);
       setSuccessMessage("Login successful!");
       setOpenSnackbar(true);
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000);
+
+      // Determine the redirect path based on roles
+      if (roles.includes("ADMIN")) {
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 3000);
+      } else if (roles.includes("DRIVER")) {
+        setTimeout(() => {
+          navigate("/driver/dashboard");
+        }, 3000);
+      } else {
+        setTimeout(() => {
+          navigate("/dashboard"); // Default to customer dashboard
+        }, 3000);
+      }
     } catch (error) {
       console.error("Login Error:", error);
 
@@ -72,7 +89,16 @@ const Login = ({ setIsAuth }) => {
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)" }}>
-      <Card sx={{ width: 450, p: 4, boxShadow: 8, bgcolor: "#252525", color: "white", borderRadius: 4 }}>
+      <Card
+        sx={{
+          width: 450,
+          p: 4,
+          boxShadow: 8,
+          bgcolor: "#252525",
+          color: "white",
+          borderRadius: 4,
+        }}
+      >
         <CardContent>
           <Typography variant="h4" align="center" gutterBottom>
             Login
@@ -117,7 +143,14 @@ const Login = ({ setIsAuth }) => {
               fullWidth
               variant="contained"
               disabled={loading}
-              sx={{ mt: 3, bgcolor: "#FFCC00", color: "black", "&:hover": { bgcolor: "#E6B800" }, fontSize: "16px", fontWeight: "bold" }}
+              sx={{
+                mt: 3,
+                bgcolor: "#FFCC00",
+                color: "black",
+                "&:hover": { bgcolor: "#E6B800" },
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
             >
               {loading ? <CircularProgress size={24} sx={{ color: "black" }} /> : "Login"}
             </Button>

@@ -18,8 +18,8 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await api.get("/api/v1/bookings");
-        console.log("Bookings:", response.data); //add this to check the response
+        const response = await api.get("/api/v1/bookings"); // Use api.get, not axios.get
+        console.log("Bookings:", response.data); // add this to check the response
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -37,7 +37,13 @@ const Dashboard = () => {
   };
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)",
+        minHeight: "100vh",
+      }}
+    >
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#FFCC00", textAlign: "center" }}>
           Your Bookings

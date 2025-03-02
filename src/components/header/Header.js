@@ -1,109 +1,87 @@
 import React from "react";
-import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
-import { Button } from "react-bootstrap";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import { NavLink, useNavigate, Link } from "react-router-dom";
-import { Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent, Box, Typography } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 
-const Header = ({ isAuth, userName, setIsAuth }) => {
-  //get the function from App.js
+const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
   const navigate = useNavigate();
+  const isCustomer = userRoles.includes("CUSTOMER");
+  const isAdmin = userRoles.includes("ADMIN");
 
-  const [showLogoutPopup, setShowLogoutPopup] = React.useState(false); //added react.
+  const menuItems = [
+    {
+      key: "home",
+      label: <Link to="/">Home</Link>,
+    },
+    {
+      key: "about",
+      label: <Link to="/about">About</Link>,
+    },
+    ...(isAuth && (isCustomer || isAdmin)
+      ? [
+          {
+            key: "bookings",
+            label: <Link to="/bookings">My Bookings</Link>,
+          },
+          {
+            key: "book-cab",
+            label: <Link to="/book-cab">Book a Cab</Link>,
+          },
+        ]
+      : []),
+    ...(isAdmin
+      ? [
+          {
+            key: "cars",
+            label: <Link to="/cars">Manage Cars</Link>,
+          },
+          {
+            key: "drivers",
+            label: <Link to="/drivers">Manage Drivers</Link>,
+          },
+        ]
+      : []),
+  ];
 
-  const handleLogoutClick = () => {
-    setShowLogoutPopup(true);
-  };
-
-  const handleConfirmLogout = () => {
-    //call setIsAuth when logging out
-    setShowLogoutPopup(false);
+  const handleLogout = () => {
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("userId");
-    setIsAuth(false); // Update isAuth state
-    navigate("/"); //no need to wait.
-  };
-
-  const cancelLogout = () => {
-    setShowLogoutPopup(false);
+    localStorage.removeItem("roles");
+    setIsAuth(false);
+    navigate("/login");
   };
 
   return (
-    <>
-      <Navbar bg="dark" expand="lg" className="py-2 shadow-sm" style={{ margin: 0, padding: 0 }}>
-        <Container fluid style={{ margin: 0 }}>
-          <Navbar.Brand href="/" style={{ color: "gold", fontWeight: "bold", fontSize: "24px" }}>
-            <LocalTaxiIcon style={{ fontSize: "30px", marginRight: "10px" }} />
-            Mega Cabs
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="navbarScroll" />
-          <Navbar.Collapse id="navbarScroll">
-            <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: "100px" }} navbarScroll>
-              {isAuth ? (
-                <>
-                  <NavLink className="nav-link text-white" activeClassName="active-link" to="/dashboard">
-                    Dashboard
-                  </NavLink>
-                  <NavLink className="nav-link text-white" activeClassName="active-link" to="/book-cab">
-                    Booking
-                  </NavLink>
-                </>
-              ) : (
-                <>
-                  <NavLink className="nav-link text-white" activeClassName="active-link" to="/">
-                    Home
-                  </NavLink>
-                  <NavLink className="nav-link text-white" activeClassName="active-link" to="/about">
-                    About Us
-                  </NavLink>
-                </>
-              )}
-            </Nav>
-            <div>
-              {isAuth ? (
-                <Box display="flex" alignItems="center">
-                  {userName && (
-                    <Typography variant="body1" sx={{ mr: 2, color: "#FFCC00" }}>
-                      {userName}
-                    </Typography>
-                  )}
-                  <Button variant="outline-light" className="me-2 px-4 py-2" onClick={handleLogoutClick} style={{ fontSize: "16px" }}>
-                    Logout
-                  </Button>
-                </Box>
-              ) : (
-                <>
-                  <Button variant="outline-light" className="me-2 px-4 py-2" onClick={() => navigate("/login")} style={{ fontSize: "16px" }}>
-                    Login
-                  </Button>
-                  <Button variant="outline-light" className="px-4 py-2" onClick={() => navigate("/register")} style={{ fontSize: "16px" }}>
-                    Register
-                  </Button>
-                </>
-              )}
-            </div>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <AppBar position="static" sx={{ bgcolor: "#252525", boxShadow: "none" }}>
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#FFCC00" }}>
+          MegaCabs
+        </Typography>
 
-      <Dialog open={showLogoutPopup} onClose={cancelLogout}>
-        <DialogTitle>Confirm Logout</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Are you sure you want to logout?</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelLogout} color="primary">
-            No
-          </Button>
-          <Button onClick={handleConfirmLogout} color="primary" autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          {menuItems.map((item) => (
+            <Button key={item.key} color="inherit" sx={{ color: "white" }}>
+              {item.label}
+            </Button>
+          ))}
+
+          {isAuth ? (
+            <>
+              <Typography variant="body1" color="white">
+                Welcome, {userName}!
+              </Typography>
+              <Button color="inherit" onClick={handleLogout} sx={{ color: "white" }}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button color="inherit" component={Link} to="/login" sx={{ color: "white" }}>
+              Login
+            </Button>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 
