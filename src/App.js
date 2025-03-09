@@ -52,15 +52,15 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/about" element={<About />} />
         {/* Protected Customer Routes */}
-        <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/book-cab" element={isAuth ? <BookCab /> : <Navigate to="/login" />} />
-        <Route path="/bookings" element={isAuth && (isCustomer || isAdmin) ? <BookingList /> : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Navigate to="/" />} />
+        <Route path="/book-cab" element={isAuth ? <BookCab /> : <Navigate to="/" />} />
+        <Route path="/bookings" element={isAuth && (isCustomer || isAdmin) ? <BookingList /> : <Navigate to="/" />} />
         {/* Protected Admin Routes */}
-        <Route path="/admin/dashboard" element={isAuth && isAdmin ? <AdminDashboard /> : <Navigate to="/login" />} />
-        <Route path="/cars" element={isAuth && isAdmin ? <CarList /> : <Navigate to="/login" />} />
-        <Route path="/drivers" element={isAuth && isAdmin ? <DriverList /> : <Navigate to="/login" />} />
+        <Route path="/admin/dashboard" element={isAuth && isAdmin ? <AdminDashboard /> : <Navigate to="/" />} />
+        <Route path="/cars" element={isAuth && isAdmin ? <CarList /> : <Navigate to="/" />} />
+        <Route path="/drivers" element={isAuth && isAdmin ? <DriverList /> : <Navigate to="/" />} />
         {/* Protected Driver Routes */}
-        <Route path="/driver/dashboard" element={isAuth && userRoles.includes("DRIVER") ? <DriverDashboard /> : <Navigate to="/login" />} />
+        <Route path="/driver/dashboard" element={isAuth && userRoles.includes("DRIVER") ? <DriverDashboard /> : <Navigate to="/" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

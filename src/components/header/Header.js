@@ -16,11 +16,11 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
       key: "about",
       label: <Link to="/about">About</Link>,
     },
-    ...(isAuth && (isCustomer || isAdmin)
+    ...(isAuth && isCustomer
       ? [
           {
-            key: "bookings",
-            label: <Link to="/bookings">My Bookings</Link>,
+            key: "dashboard",
+            label: <Link to="/dashboard">Dashboard</Link>,
           },
           {
             key: "book-cab",
@@ -30,6 +30,10 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
       : []),
     ...(isAdmin
       ? [
+          {
+            key: "bookings",
+            label: <Link to="/bookings">All Bookings</Link>,
+          },
           {
             key: "cars",
             label: <Link to="/cars">Manage Cars</Link>,
