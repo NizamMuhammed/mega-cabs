@@ -16,6 +16,8 @@ import NotFound from "./Pages/NotFound";
 import CarList from "./components/cars/CarList";
 import DriverList from "./components/drivers/DriverList";
 import BookingList from "./components/bookings/BookingList";
+import AdminBookings from "./Pages/admin/AdminBookings";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -59,6 +61,14 @@ function App() {
         <Route path="/admin/dashboard" element={isAuth && isAdmin ? <AdminDashboard /> : <Navigate to="/" />} />
         <Route path="/cars" element={isAuth && isAdmin ? <CarList /> : <Navigate to="/" />} />
         <Route path="/drivers" element={isAuth && isAdmin ? <DriverList /> : <Navigate to="/" />} />
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute roles={["ADMIN", "CUSTOMER"]}>
+              <AdminBookings />
+            </ProtectedRoute>
+          }
+        />
         {/* Protected Driver Routes */}
         <Route path="/driver/dashboard" element={isAuth && userRoles.includes("DRIVER") ? <DriverDashboard /> : <Navigate to="/" />} />
         <Route path="*" element={<NotFound />} />

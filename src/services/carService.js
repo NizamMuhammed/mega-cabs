@@ -18,7 +18,6 @@ const carService = {
         carType: car.carType,
         carNumber: car.carNumber,
         carLocation: car.carLocation,
-        carStatus: car.carStatus,
         carImage: car.carImage, // Added image field from AddCarForm
         isAvailable: car.isAvailable !== undefined ? car.isAvailable : true,
         // Added missing fields to match backend Car model

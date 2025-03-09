@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axiosConfig";
-import { Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem, Paper, Alert, Snackbar, Divider, ListItemIcon, ListItemText, ListItem } from "@mui/material";
+import { Box, Typography, TextField, Button, Grid, MenuItem, Snackbar, Alert, FormControl, InputLabel, Select } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
-import DateRangeIcon from "@mui/icons-material/DateRange";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import { useMediaQuery } from "@mui/material";
 
 const BookCab = () => {
   const [cabs, setCabs] = useState([]);
@@ -15,11 +12,12 @@ const BookCab = () => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
 
   const locations = [
-    { name: "Colombo 1", distance: 1 },
-    { name: "Colombo 2", distance: 2 },
-    { name: "Colombo 3", distance: 3 },
+    { name: "Colombo Fort", distance: 1 },
+    { name: "Slave Island", distance: 2 },
+    { name: "Kollupitiya", distance: 3 },
     { name: "Dehiwala", distance: 4 },
     { name: "Mount Lavinia", distance: 5 },
     { name: "Moratuwa", distance: 6 },
@@ -37,9 +35,9 @@ const BookCab = () => {
 
   const getCabs = async () => {
     try {
-      const response = await api.get("/api/v1/cabs");
-      console.log(response.data);
-      setCabs(response.data); // Set fetched data in state
+      const response = await api.get("/api/v1/cars");
+      const availableCabs = response.data.filter((cab) => cab.isAvailable === true);
+      setCabs(availableCabs);
     } catch (error) {
       console.error(error);
     }
@@ -64,7 +62,7 @@ const BookCab = () => {
 
   const handleBooking = async (values, { resetForm }) => {
     try {
-      const userEmailId = localStorage.getItem("userName"); // Get userEmailId from local storage
+      const userEmailId = localStorage.getItem("userName");
       const bookingData = {
         pickupLocation: values.pickupLocation,
         dropLocation: values.dropLocation,
@@ -72,7 +70,7 @@ const BookCab = () => {
         time: values.time,
         cabType: values.cabType,
         price,
-        userId: userEmailId, // Add userId to the booking data
+        userId: userEmailId,
       };
       const response = await api.post("/api/v1/bookings", bookingData);
       if (response.status === 200) {
@@ -81,7 +79,7 @@ const BookCab = () => {
         resetForm();
         setTimeout(() => {
           navigate("/dashboard");
-        }, 3000); // Navigate back to dashboard after 3 seconds
+        }, 3000);
       }
     } catch (error) {
       console.error(error);
@@ -111,10 +109,23 @@ const BookCab = () => {
   });
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <Typography variant="h4" gutterBottom sx={{ color: "#FFCC00", mb: 3 }}>
+    <Box
+      sx={{
+        p: 3,
+        background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)", // Futuristic gradient background
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        transition: "all 0.5s ease-in-out",
+        borderRadius: "10px",
+        boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)", // Subtle shadow for depth
+      }}
+    >
+      <Typography variant="h4" gutterBottom sx={{ color: "#00F0FF", mb: 3, fontFamily: "'Orbitron', sans-serif", letterSpacing: 3 }}>
         Book a Cab
       </Typography>
+
       <Formik
         initialValues={{
           pickupLocation: "",
@@ -128,9 +139,9 @@ const BookCab = () => {
       >
         {({ values, handleChange, handleBlur }) => (
           <Form>
-            {/* removed the Box */}
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid container spacing={3}>
+              {/* Pickup Location */}
+              <Grid item xs={12} sm={6}>
                 <TextField
                   select
                   label="Pickup Location"
@@ -143,9 +154,16 @@ const BookCab = () => {
                   onBlur={handleBlur}
                   fullWidth
                   margin="normal"
-                  sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                  InputLabelProps={{ style: { color: "white" } }}
-                  inputProps={{ style: { color: "white" } }}
+                  sx={{
+                    bgcolor: "#1F1F1F", // Dark background for inputs
+                    borderRadius: 1,
+                    "& .MuiInputBase-root": { color: "white" },
+                    "& .MuiInputLabel-root": { color: "white" },
+                    transition: "0.3s ease",
+                    "&:hover": {
+                      bgcolor: "#333", // Slightly lighter on hover for emphasis
+                    },
+                  }}
                 >
                   {locations.map((location) => (
                     <MenuItem key={location.name} value={location.name}>
@@ -155,7 +173,9 @@ const BookCab = () => {
                 </TextField>
                 <ErrorMessage name="pickupLocation" component="div" style={{ color: "red" }} />
               </Grid>
-              <Grid item xs={12}>
+
+              {/* Drop Location */}
+              <Grid item xs={12} sm={6}>
                 <TextField
                   select
                   label="Drop Location"
@@ -168,9 +188,16 @@ const BookCab = () => {
                   onBlur={handleBlur}
                   fullWidth
                   margin="normal"
-                  sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                  InputLabelProps={{ style: { color: "white" } }}
-                  inputProps={{ style: { color: "white" } }}
+                  sx={{
+                    bgcolor: "#1F1F1F", // Dark background for inputs
+                    borderRadius: 1,
+                    "& .MuiInputBase-root": { color: "white" },
+                    "& .MuiInputLabel-root": { color: "white" },
+                    transition: "0.3s ease",
+                    "&:hover": {
+                      bgcolor: "#333", // Slightly lighter on hover for emphasis
+                    },
+                  }}
                 >
                   {locations.map((location) => (
                     <MenuItem key={location.name} value={location.name} disabled={location.name === values.pickupLocation}>
@@ -180,6 +207,8 @@ const BookCab = () => {
                 </TextField>
                 <ErrorMessage name="dropLocation" component="div" style={{ color: "red" }} />
               </Grid>
+
+              {/* Date and Time */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Date"
@@ -188,14 +217,25 @@ const BookCab = () => {
                   value={values.date}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  InputLabelProps={{ shrink: true, style: { color: "white" } }}
+                  InputLabelProps={{
+                    shrink: true,
+                    style: { color: "white" },
+                  }}
                   fullWidth
                   margin="normal"
-                  sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                  inputProps={{ style: { color: "white" } }}
+                  sx={{
+                    bgcolor: "#1F1F1F",
+                    borderRadius: 1,
+                    "& .MuiInputBase-root": { color: "white" },
+                    transition: "0.3s ease",
+                    "&:hover": {
+                      bgcolor: "#333",
+                    },
+                  }}
                 />
                 <ErrorMessage name="date" component="div" style={{ color: "red" }} />
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Time"
@@ -204,14 +244,26 @@ const BookCab = () => {
                   value={values.time}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  InputLabelProps={{ shrink: true, style: { color: "white" } }}
+                  InputLabelProps={{
+                    shrink: true,
+                    style: { color: "white" },
+                  }}
                   fullWidth
                   margin="normal"
-                  sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                  inputProps={{ style: { color: "white" } }}
+                  sx={{
+                    bgcolor: "#1F1F1F",
+                    borderRadius: 1,
+                    "& .MuiInputBase-root": { color: "white" },
+                    transition: "0.3s ease",
+                    "&:hover": {
+                      bgcolor: "#333",
+                    },
+                  }}
                 />
                 <ErrorMessage name="time" component="div" style={{ color: "red" }} />
               </Grid>
+
+              {/* Cab Type Selection */}
               <Grid item xs={12}>
                 <TextField
                   select
@@ -222,31 +274,51 @@ const BookCab = () => {
                   onBlur={handleBlur}
                   fullWidth
                   margin="normal"
-                  sx={{ bgcolor: "#3A3A3A", borderRadius: 1 }}
-                  InputLabelProps={{ style: { color: "white" } }}
-                  inputProps={{ style: { color: "white" } }}
+                  sx={{
+                    bgcolor: "#1F1F1F",
+                    borderRadius: 1,
+                    "& .MuiInputBase-root": { color: "white" },
+                    transition: "0.3s ease",
+                    "&:hover": {
+                      bgcolor: "#333",
+                    },
+                  }}
                 >
                   {cabs.map((cab) => (
-                    <MenuItem key={cab.cabId} value={cab.cabName}>
-                      <img src={cab.cabImage} alt={`${cab.cabBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
-                      {cab.cabBrand} {cab.cabType} ({cab.cabCapacity} seats)
+                    <MenuItem key={cab.carId} value={cab.carName}>
+                      <img src={cab.carImage} alt={`${cab.carBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
+                      {cab.carBrand} {cab.carName} ({cab.carType})
                     </MenuItem>
                   ))}
                 </TextField>
                 <ErrorMessage name="cabType" component="div" style={{ color: "red" }} />
               </Grid>
+
+              {/* Price */}
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ color: "#00F0FF" }}>
                   Price: LKR {price}
                 </Typography>
               </Grid>
+
+              {/* Submit Button */}
               <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
                   fullWidth
-                  sx={{ mt: 3, bgcolor: "#FFCC00", color: "black", "&:hover": { bgcolor: "#E6B800" }, fontSize: "16px", fontWeight: "bold" }}
+                  sx={{
+                    mt: 3,
+                    bgcolor: "#00F0FF",
+                    color: "black",
+                    "&:hover": {
+                      bgcolor: "#00C0C0", // Neon-like hover effect
+                    },
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    transition: "0.3s ease",
+                  }}
                 >
                   Book Now
                 </Button>
@@ -255,15 +327,11 @@ const BookCab = () => {
           </Form>
         )}
       </Formik>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        sx={{ top: 80 }} // Adjust the top position
-      >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
-          Booking successful! Your price is Rs.{price}.00
+
+      {/* Snackbar */}
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar} message="Booking successful!">
+        <Alert severity="success" sx={{ width: "100%" }}>
+          Your booking has been confirmed. Enjoy your ride!
         </Alert>
       </Snackbar>
     </Box>

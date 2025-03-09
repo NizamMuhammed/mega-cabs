@@ -30,7 +30,12 @@ api.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          message.error("Session expired. Please login again.");
+          if (error.response.data?.message?.includes("expired")) {
+            localStorage.clear();
+            message.error("Your session has expired. Please login again.");
+          } else {
+            message.error("Session expired. Please login again.");
+          }
           localStorage.clear();
           window.location.href = "/login";
           break;

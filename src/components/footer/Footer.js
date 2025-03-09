@@ -1,59 +1,75 @@
 import React from "react";
-import { Typography, Box, Container, Link, Grid } from "@mui/material";
+import { Layout, Typography, Row, Col, Space } from "antd";
+import { Link } from "react-router-dom";
+import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
+
+const { Footer: AntFooter } = Layout;
+const { Title, Text } = Typography;
+
+const colors = {
+  primary: "#6C63FF",
+  secondary: "#2A2A72",
+  background: "#1A1A2E",
+  text: "#FFFFFF",
+};
 
 const Footer = () => {
   return (
-    <Box
-      component="footer"
-      sx={{
-        bgcolor: "#252525",
-        color: "white",
-        py: 3,
-        mt: 8, // Add margin top for spacing
-      }}
-    >
-      <Container maxWidth="lg">
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <Typography variant="h6" color="#FFCC00" gutterBottom>
-              Mega Cabs
-            </Typography>
-            <Typography variant="body2">Your trusted partner for safe and reliable transportation.</Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Typography variant="h6" color="#FFCC00" gutterBottom>
-              Quick Links
-            </Typography>
-            <Box display="flex" flexDirection="column">
-              <Link href="#" color="inherit" underline="none" sx={{ mb: 1 }}>
-                Home
+    <AntFooter style={{ background: colors.background, padding: "3rem 2rem" }}>
+      <Row gutter={[32, 32]} justify="space-between">
+        <Col xs={24} sm={8}>
+          <Title level={4} style={{ color: colors.primary }}>
+            MegaCabs
+          </Title>
+          <Text style={{ color: colors.text }}>Your trusted partner for safe and reliable transportation.</Text>
+        </Col>
+
+        <Col xs={24} sm={8}>
+          <Title level={4} style={{ color: colors.primary }}>
+            Quick Links
+          </Title>
+          <Space direction="vertical">
+            {[
+              { to: "/", text: "Home" },
+              { to: "/about", text: "About" },
+              { to: "/book-cab", text: "Book a Cab" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                style={{
+                  color: colors.text,
+                  textDecoration: "none",
+                  "&:hover": { color: colors.primary },
+                }}
+              >
+                {link.text}
               </Link>
-              <Link href="#" color="inherit" underline="none" sx={{ mb: 1 }}>
-                About Us
-              </Link>
-              <Link href="#" color="inherit" underline="none" sx={{ mb: 1 }}>
-                Contact
-              </Link>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Typography variant="h6" color="#FFCC00" gutterBottom>
-              Contact Us
-            </Typography>
-            <Typography variant="body2">
-              Email: info@megacabs.com
-              <br />
-              Phone: +94 11 123 4567
-            </Typography>
-          </Grid>
-        </Grid>
-        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-          {"Copyright © "}
-          {new Date().getFullYear()}
-          {" Mega Cabs. All rights reserved."}
-        </Typography>
-      </Container>
-    </Box>
+            ))}
+          </Space>
+        </Col>
+
+        <Col xs={24} sm={8}>
+          <Title level={4} style={{ color: colors.primary }}>
+            Contact Us
+          </Title>
+          <Space direction="vertical">
+            <Text style={{ color: colors.text }}>
+              <MailOutlined style={{ marginRight: 8 }} />
+              info@megacabs.com
+            </Text>
+            <Text style={{ color: colors.text }}>
+              <PhoneOutlined style={{ marginRight: 8 }} />
+              +94 11 123 4567
+            </Text>
+          </Space>
+        </Col>
+      </Row>
+
+      <Row justify="center" style={{ marginTop: "2rem" }}>
+        <Text style={{ color: "rgba(255,255,255,0.6)" }}>© {new Date().getFullYear()} MegaCabs. All rights reserved.</Text>
+      </Row>
+    </AntFooter>
   );
 };
 

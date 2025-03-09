@@ -1,10 +1,13 @@
-import React from "react";
-import { Form, Input, Select, Upload, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Form, Input, Select, Upload, Button, Row, Col } from "antd";
+import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
+const { Dragger } = Upload;
 
 const AddCarForm = ({ form }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+
   const getBase64 = (file, callback) => {
     const reader = new FileReader();
     reader.addEventListener("load", () => callback(reader.result));
@@ -13,12 +16,35 @@ const AddCarForm = ({ form }) => {
 
   return (
     <Form form={form} layout="vertical">
-      <Form.Item name="carName" label="Car Name" rules={[{ required: true, message: "Please enter car name" }]}>
-        <Input />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item name="carBrand" label="Car Brand" rules={[{ required: true, message: "Please enter car brand" }]}>
+            <Select placeholder="Select car Brand">
+              <Option value="Mercedez Benz">Mercedez Benz</Option>
+              <Option value="BMW">BMW</Option>
+              <Option value="AUDI">AUDI</Option>
+              <Option value="TOYOTA">TOYOTA</Option>
+              <Option value="HONDA">HONDA</Option>
+              <Option value="SUZUKI">SUZUKI</Option>
+              <Option value="NISSAN">NISSAN</Option>
+              <Option value="HYUNDAI">HYUNDAI</Option>
+              <Option value="KIA">KIA</Option>
+              <Option value="FORD">FORD</Option>
+              <Option value="VOLKSWAGEN">VOLKSWAGEN</Option>
+              <Option value="CHEVROLET">CHEVROLET</Option>
+              <Option value="JAGUAR">JAGUAR</Option>
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="carName" label="Car Name" rules={[{ required: true, message: "Please enter car name" }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Form.Item name="carType" label="Car Type" rules={[{ required: true, message: "Please select car type" }]}>
-        <Select>
+        <Select placeholder="Select car type">
           <Option value="SEDAN">Sedan</Option>
           <Option value="SUV">SUV</Option>
           <Option value="LUXURY">Luxury</Option>
@@ -34,26 +60,30 @@ const AddCarForm = ({ form }) => {
         <Input />
       </Form.Item>
 
-      <Form.Item name="carStatus" label="Status" rules={[{ required: true, message: "Please select status" }]}>
-        <Select>
-          <Option value="ACTIVE">Active</Option>
-          <Option value="MAINTENANCE">Maintenance</Option>
-          <Option value="INACTIVE">Inactive</Option>
-        </Select>
-      </Form.Item>
-
       <Form.Item name="carImage" label="Car Image">
-        <Upload
+        <Dragger
           beforeUpload={(file) => {
-            getBase64(file, (imageUrl) => {
-              form.setFieldsValue({ carImage: imageUrl });
+            getBase64(file, (url) => {
+              form.setFieldsValue({ carImage: url });
+              setImageUrl(url);
             });
-            return false; // prevent auto upload
+            return false;
           }}
           maxCount={1}
+          showUploadList={false}
         >
-          <Button icon={<UploadOutlined />}>Select Image</Button>
-        </Upload>
+          {imageUrl ? (
+            <img src={imageUrl} alt="Car preview" style={{ maxWidth: "100%", maxHeight: "150px", padding: "20px" }} />
+          ) : (
+            <>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Click or drag file to this area to upload</p>
+              <p className="ant-upload-hint">Support for a single image upload.</p>
+            </>
+          )}
+        </Dragger>
       </Form.Item>
     </Form>
   );

@@ -43,13 +43,22 @@ const CarList = () => {
   }, [navigate, isAuthorized]);
 
   const handleDelete = async (carId) => {
-    try {
-      await carService.deleteCar(carId);
-      message.success("Car deleted successfully");
-      fetchCars();
-    } catch (error) {
-      message.error("Failed to delete car");
-    }
+    Modal.confirm({
+      title: "Are you sure you want to delete this car?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "No, Cancel",
+      onOk: async () => {
+        try {
+          await carService.deleteCar(carId);
+          message.success("Car deleted successfully");
+          fetchCars();
+        } catch (error) {
+          message.error("Failed to delete car");
+        }
+      },
+    });
   };
 
   const handleAddCar = () => {
@@ -89,10 +98,10 @@ const CarList = () => {
   };
 
   const columns = [
+    { title: "Brand", dataIndex: "carBrand", key: "carBrand" },
     { title: "Name", dataIndex: "carName", key: "carName" },
     { title: "Type", dataIndex: "carType", key: "carType" },
     { title: "Number", dataIndex: "carNumber", key: "carNumber" },
-    { title: "Status", dataIndex: "carStatus", key: "carStatus" },
     { title: "Location", dataIndex: "carLocation", key: "carLocation" },
     {
       title: "Image",
