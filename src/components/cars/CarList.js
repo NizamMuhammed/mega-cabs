@@ -94,6 +94,12 @@ const CarList = () => {
     { title: "Number", dataIndex: "carNumber", key: "carNumber" },
     { title: "Status", dataIndex: "carStatus", key: "carStatus" },
     { title: "Location", dataIndex: "carLocation", key: "carLocation" },
+    {
+      title: "Image",
+      dataIndex: "carImage",
+      key: "carImage",
+      render: (carImage) => (carImage ? <img src={carImage} alt="Car" style={{ width: "100px" }} /> : "No Image"),
+    },
     { title: "Available", dataIndex: "isAvailable", key: "isAvailable", render: (isAvailable) => (isAvailable ? "Yes" : "No") },
     {
       title: "Action",

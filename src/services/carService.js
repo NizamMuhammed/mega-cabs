@@ -19,7 +19,12 @@ const carService = {
         carNumber: car.carNumber,
         carLocation: car.carLocation,
         carStatus: car.carStatus,
-        isAvailable: true,
+        carImage: car.carImage, // Added image field from AddCarForm
+        isAvailable: car.isAvailable !== undefined ? car.isAvailable : true,
+        // Added missing fields to match backend Car model
+        carCapacity: car.carCapacity || "",
+        carDescription: car.carDescription || "",
+        carBrand: car.carBrand || "",
       });
       return response;
     } catch (error) {

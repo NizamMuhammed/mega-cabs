@@ -1,9 +1,16 @@
 import React from "react";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Upload, Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
 const AddCarForm = ({ form }) => {
+  const getBase64 = (file, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result));
+    reader.readAsDataURL(file);
+  };
+
   return (
     <Form form={form} layout="vertical">
       <Form.Item name="carName" label="Car Name" rules={[{ required: true, message: "Please enter car name" }]}>
@@ -33,6 +40,20 @@ const AddCarForm = ({ form }) => {
           <Option value="MAINTENANCE">Maintenance</Option>
           <Option value="INACTIVE">Inactive</Option>
         </Select>
+      </Form.Item>
+
+      <Form.Item name="carImage" label="Car Image">
+        <Upload
+          beforeUpload={(file) => {
+            getBase64(file, (imageUrl) => {
+              form.setFieldsValue({ carImage: imageUrl });
+            });
+            return false; // prevent auto upload
+          }}
+          maxCount={1}
+        >
+          <Button icon={<UploadOutlined />}>Select Image</Button>
+        </Upload>
       </Form.Item>
     </Form>
   );
