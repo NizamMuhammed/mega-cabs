@@ -50,6 +50,11 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
       label: "About",
       path: "/about",
     },
+    {
+      key: "help",
+      label: "Help",
+      path: "/help",
+    },
     ...(isAuth && isCustomer
       ? [
           {

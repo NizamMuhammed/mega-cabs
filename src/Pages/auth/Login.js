@@ -29,62 +29,34 @@ const Login = ({ setIsAuth }) => {
         userPassword: password,
       });
 
-      console.log("Login Response:", response.data);
-      const token = response.data.jwt;
-      const name = response.data.userName;
-      //const roles = response.data.roles.map(role => role.name); // Get the roles from the response
-      const roles = response.data.roles.map((role) => role); // Extracting role names // no need for the name
-      const userId = response.data.userId; // get the userId from the response
+      const { jwt, userName, roles, userId } = response.data;
 
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("userName", name);
+      // Store auth data
+      localStorage.setItem("jwtToken", jwt);
+      localStorage.setItem("userName", userName);
       localStorage.setItem("userId", userId);
-      localStorage.setItem("roles", JSON.stringify(roles)); // Store roles as a string
+      localStorage.setItem("roles", JSON.stringify(roles));
+
       setIsAuth(true);
       setSuccessMessage("Login successful!");
       setOpenSnackbar(true);
 
-      // Determine the redirect path based on roles
+      // Redirect based on role
+      const redirectDelay = 1500;
       if (roles.includes("ADMIN")) {
-        setTimeout(() => {
-          navigate("/admin/dashboard");
-        }, 3000);
+        setTimeout(() => navigate("/admin/dashboard"), redirectDelay);
       } else if (roles.includes("DRIVER")) {
-        setTimeout(() => {
-          navigate("/driver/dashboard");
-        }, 3000);
+        setTimeout(() => navigate("/driver/dashboard"), redirectDelay);
       } else {
-        setTimeout(() => {
-          navigate("/dashboard"); // Default to customer dashboard
-        }, 3000);
+        setTimeout(() => navigate("/dashboard"), redirectDelay);
       }
     } catch (error) {
       console.error("Login Error:", error);
-
-      if (error.response) {
-        console.error("Server Response:", error.response);
-        if (error.response.status === 401) {
-          setErrorMessage("Invalid email or password");
-        } else if (error.response.status === 400) {
-          setErrorMessage(error.response.data ? error.response.data : "Bad Request");
-        } else if (error.response.status === 404) {
-          setErrorMessage("User not found");
-        } else if (error.response.status === 403) {
-          setErrorMessage("User account is disabled or locked");
-        } else if (error.response.status === 500) {
-          setErrorMessage("Internal Server Error. Please try again later.");
-        } else {
-          setErrorMessage(`Server responded with error status: ${error.response.status}`);
-        }
-      } else if (error.request) {
-        console.error("No Response Received:", error.request);
-        setErrorMessage("Network error. Please check your internet connection and try again.");
-      } else {
-        console.error("Error Setting Up Request:", error.message);
-        setErrorMessage("An unexpected error occurred. Please try again.");
-      }
+      const errorMessage = error.response?.data || "Login failed. Please try again.";
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

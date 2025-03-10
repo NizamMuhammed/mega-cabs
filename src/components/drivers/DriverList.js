@@ -4,6 +4,7 @@ import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import driverService from "../../services/driverService";
 import AddDriverForm from "./AddDriverForm";
+import api from "../../api/axiosConfig"; // Add this import
 
 const DriverList = () => {
   const [drivers, setDrivers] = useState([]);
@@ -61,11 +62,33 @@ const DriverList = () => {
     setIsModalVisible(false);
   };
 
+  const generateRandomPassword = () => {
+    return Math.random().toString(36).slice(-8);
+  };
+
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      await driverService.createDriver(values);
+
+      const tempPassword = generateRandomPassword();
+      console.log("Generated password:", tempPassword); // For debugging
+
+      // Create driver user account
+      const userResponse = await api.post("/api/v1/auth/register", {
+        userName: values.driverName,
+        userEmailId: values.driverEmailId,
+        userPassword: tempPassword, // Send raw password, let server encode it
+        roles: ["DRIVER"],
+      });
+
+      // Then create the driver profile
+      const driverData = {
+        ...values,
+        userId: userResponse.data.userId,
+      };
+      await driverService.createDriver(driverData);
+
       message.success("Driver added successfully");
       setIsModalVisible(false);
       form.resetFields();

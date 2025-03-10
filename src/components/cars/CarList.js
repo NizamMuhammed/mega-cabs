@@ -4,12 +4,16 @@ import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import carService from "../../services/carService";
 import AddCarForm from "./AddCarForm";
+import EditCarForm from "./EditCarForm";
 
 const CarList = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingCar, setEditingCar] = useState(null);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
   const userRoles = JSON.parse(localStorage.getItem("roles") || "[]");
   const isAuthorized = userRoles.includes("ADMIN"); // Changed this line
   const navigate = useNavigate();
@@ -97,6 +101,41 @@ const CarList = () => {
     }
   };
 
+  const handleEdit = (car) => {
+    setEditingCar(car);
+    setIsEditModalVisible(true);
+  };
+
+  const handleEditModalCancel = () => {
+    editForm.resetFields();
+    setIsEditModalVisible(false);
+    setEditingCar(null);
+  };
+
+  const handleEditModalOk = async () => {
+    try {
+      const values = await editForm.validateFields();
+      setLoading(true);
+
+      const updatedCar = {
+        ...editingCar,
+        ...values,
+      };
+
+      await carService.updateCar(updatedCar);
+      await fetchCars(); // First fetch the updated list
+      message.success("Car updated successfully");
+      setIsEditModalVisible(false);
+      editForm.resetFields();
+      setEditingCar(null);
+    } catch (error) {
+      console.error("Error updating car:", error);
+      message.error("Failed to update car");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
     { title: "Brand", dataIndex: "carBrand", key: "carBrand" },
     { title: "Name", dataIndex: "carName", key: "carName" },
@@ -115,7 +154,7 @@ const CarList = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => navigate(`/cars/edit/${record.carId}`)}>Edit</Button>
+          <Button onClick={() => handleEdit(record)}>Edit</Button>
           <Button danger onClick={() => handleDelete(record.carId)}>
             Delete
           </Button>
@@ -144,6 +183,10 @@ const CarList = () => {
 
           <Modal title="Add New Car" open={isModalVisible} onOk={handleModalOk} onCancel={handleModalCancel} confirmLoading={loading} width={600}>
             <AddCarForm form={form} />
+          </Modal>
+
+          <Modal title="Edit Car" open={isEditModalVisible} onOk={handleEditModalOk} onCancel={handleEditModalCancel} confirmLoading={loading} width={600}>
+            <EditCarForm form={editForm} initialValues={editingCar} />
           </Modal>
         </>
       ) : null}

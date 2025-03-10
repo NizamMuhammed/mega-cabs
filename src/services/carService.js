@@ -32,8 +32,14 @@ const carService = {
     }
   },
 
-  updateCar: (car) => {
-    return api.put(CAR_API_BASE_URL, car);
+  updateCar: async (car) => {
+    try {
+      const response = await api.put(CAR_API_BASE_URL, car);
+      return response;
+    } catch (error) {
+      console.error("Error updating car:", error.response?.data || error.message);
+      throw error;
+    }
   },
 
   deleteCar: (carId) => {

@@ -19,6 +19,7 @@ import BookingList from "./components/bookings/BookingList";
 import AdminBookings from "./Pages/admin/AdminBookings";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Reports from "./Pages/admin/Reports";
+import Help from "./Pages/Help";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -80,6 +81,7 @@ function App() {
         />
         {/* Protected Driver Routes */}
         <Route path="/driver/dashboard" element={isAuth && userRoles.includes("DRIVER") ? <DriverDashboard /> : <Navigate to="/" />} />
+        <Route path="/help" element={<Help />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -218,21 +218,21 @@ const Home = () => {
           <Title level={2} style={{ color: "#fff", marginBottom: "2rem" }}>
             Ready for the Future of Transportation?
           </Title>
-          <Button
-            type="primary"
-            size="large"
-            shape="round"
-            style={{
-              background: "#1890ff",
-              height: "50px",
-              width: "200px",
-              fontSize: "1.2rem",
-            }}
-            component={Link}
-            to="/book-cab"
-          >
-            Get Started
-          </Button>
+          <Link to="/help">
+            <Button
+              type="primary"
+              size="large"
+              shape="round"
+              style={{
+                background: "#1890ff",
+                height: "50px",
+                width: "200px",
+                fontSize: "1.2rem",
+              }}
+            >
+              Get Started
+            </Button>
+          </Link>
         </div>
 
         <Footer />
