@@ -1,34 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { Layout, Typography, Card, List, Button, Tag, Space, Modal, message } from "antd";
+import { CarOutlined, ClockCircleOutlined, CheckCircleOutlined, EnvironmentOutlined, DollarOutlined, DeleteOutlined } from "@ant-design/icons";
 import api from "../../api/axiosConfig";
-import {
-  Typography,
-  Box,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
-  IconButton,
-  Alert,
-  Snackbar,
-} from "@mui/material";
-import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
-import DateRangeIcon from "@mui/icons-material/DateRange";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import PersonIcon from "@mui/icons-material/Person";
-import { useNavigate } from "react-router-dom";
 import driverService from "../../services/driverService";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PendingIcon from "@mui/icons-material/Pending";
+import { useNavigate } from "react-router-dom";
+
+const { Content } = Layout;
+const { Title, Text } = Typography;
+
+const colors = {
+  primary: "#6C63FF",
+  secondary: "#2A2A72",
+  background: "#1A1A2E",
+  text: "#FFFFFF",
+  cardBg: "rgba(255, 255, 255, 0.05)",
+};
 
 const Dashboard = () => {
   const [bookings, setBookings] = useState([]);
@@ -96,9 +82,13 @@ const Dashboard = () => {
   const handleCancelBooking = async (bookingId) => {
     try {
       await api.delete(`/api/v1/bookings/${bookingId}`);
-      setBookings(bookings.filter((booking) => booking.bookingId !== bookingId));
-      setSnackbarMessage("Booking cancelled successfully");
-      setOpenSnackbar(true);
+      // Remove the booking from the UI state
+      const updatedBookings = bookings.filter((booking) => booking.bookingId !== bookingId);
+      if (updatedBookings.length < bookings.length) {
+        setBookings(updatedBookings);
+        setSnackbarMessage("Booking cancelled successfully");
+        setOpenSnackbar(true);
+      }
     } catch (error) {
       console.error("Error cancelling booking:", error);
       setSnackbarMessage("Failed to cancel booking");
@@ -112,145 +102,145 @@ const Dashboard = () => {
     setOpenDialog(true);
   };
 
-  const getStatusChip = (status) => {
+  const getStatusTag = (status) => {
     const statusProps = {
-      PENDING: { color: "warning", icon: <PendingIcon /> },
-      ASSIGNED: { color: "info", icon: <CheckCircleIcon /> },
-      COMPLETED: { color: "success", icon: <CheckCircleIcon /> },
-      CANCELLED: { color: "error", icon: <DeleteIcon /> },
+      PENDING: { color: "orange", icon: <ClockCircleOutlined /> },
+      ASSIGNED: { color: "blue", icon: <CarOutlined /> },
+      COMPLETED: { color: "green", icon: <CheckCircleOutlined /> },
+      CANCELLED: { color: "red", icon: <DeleteOutlined /> },
     };
     const { color, icon } = statusProps[status] || statusProps.PENDING;
-    return <Chip icon={icon} label={status} color={color} size="small" />;
+    return (
+      <Tag icon={icon} color={color}>
+        {status}
+      </Tag>
+    );
   };
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #1E1E1E 30%, #333 90%)", minHeight: "100vh" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{ color: "#FFCC00", textAlign: "center" }}>
-          Your Bookings
-        </Typography>
-        <Button variant="contained" color="primary" onClick={handleBookNowClick}>
-          Book Now
-        </Button>
-      </Box>
-
-      {loading && (
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="body1" color="white">
-            Loading bookings...
-          </Typography>
-        </Box>
-      )}
-
-      {error && (
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="body1" color="error">
-            {error}
-          </Typography>
-        </Box>
-      )}
-
-      {!loading && !error && bookings.length === 0 && (
-        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <Typography variant="body1" color="white" sx={{ mb: 2 }}>
-            No bookings found.
-          </Typography>
-          <Button variant="contained" color="primary" onClick={handleBookNowClick}>
-            Book Now
-          </Button>
-        </Box>
-      )}
-
-      {!loading && !error && bookings.length > 0 && (
-        <List>
-          {bookings.map((booking) => (
-            <Paper
-              key={booking.bookingId}
-              elevation={3}
-              sx={{
-                mb: 2,
-                p: 2,
-                background: "#252525",
-                color: "white",
-                position: "relative",
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                  transition: "transform 0.2s",
-                },
+    <Layout style={{ background: colors.background }}>
+      <Content style={{ padding: "2rem" }}>
+        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Title level={2} style={{ color: colors.text, margin: 0 }}>
+              Your Bookings
+            </Title>
+            <Button
+              type="primary"
+              onClick={handleBookNowClick}
+              style={{
+                background: `linear-gradient(45deg, ${colors.primary}, ${colors.secondary})`,
+                border: "none",
               }}
             >
-              <Box sx={{ position: "absolute", top: 10, right: 10 }}>{getStatusChip(booking.status)}</Box>
+              Book Now
+            </Button>
+          </div>
 
-              <ListItem disablePadding>
-                <ListItemIcon>
-                  <LocalTaxiIcon sx={{ color: "#FFCC00" }} />
-                </ListItemIcon>
-                <ListItemText primary={`Cab Type: ${booking.cabType}`} />
-              </ListItem>
-              <Divider sx={{ background: "white" }} />
-              <ListItem disablePadding sx={{ mt: 2 }}>
-                <ListItemIcon>
-                  <PersonIcon sx={{ color: "#FFCC00" }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={booking.assignedDriver ? `Driver: ${booking.assignedDriver.name} (${booking.assignedDriver.phone})` : "Driver: Pending Assignment"}
-                  sx={{
-                    "& .MuiListItemText-primary": {
-                      color: booking.assignedDriver ? "#4CAF50" : "#FFA500",
-                    },
+          <List
+            grid={{ gutter: 16, column: 2 }}
+            dataSource={bookings}
+            renderItem={(booking) => (
+              <List.Item>
+                <Card
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.cardBg}, rgba(108, 99, 255, 0.05))`,
+                    borderRadius: "20px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
                   }}
-                />
-              </ListItem>
-              <Divider sx={{ background: "white" }} />
-              <ListItem disablePadding>
-                <ListItemIcon>
-                  <DateRangeIcon sx={{ color: "#FFCC00" }} />
-                </ListItemIcon>
-                <ListItemText primary={`Date: ${booking.date}`} />
-              </ListItem>
-              <Divider sx={{ background: "white" }} />
-              <ListItem disablePadding>
-                <ListItemIcon>
-                  <AccessTimeIcon sx={{ color: "#FFCC00" }} />
-                </ListItemIcon>
-                <ListItemText primary={`Time: ${booking.time}`} />
-              </ListItem>
-              <Divider sx={{ background: "white" }} />
-              <ListItem disablePadding>
-                <ListItemIcon>
-                  <ConfirmationNumberIcon sx={{ color: "#FFCC00" }} />
-                </ListItemIcon>
-                <ListItemText primary={`Price: ${booking.price}`} />
-              </ListItem>
-              <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-                {booking.status !== "CANCELLED" && (
-                  <Button startIcon={<DeleteIcon />} color="error" variant="contained" onClick={() => handleOpenDialog(booking)} size="small">
-                    Cancel Booking
-                  </Button>
-                )}
-              </Box>
-            </Paper>
-          ))}
-        </List>
-      )}
+                  hoverable
+                >
+                  <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <Text style={{ color: colors.text, fontSize: "16px", fontWeight: "bold" }}>
+                        Cab Type: {booking.cabBrand}
+                        {booking.cabType}
+                        {booking.cabName}
+                      </Text>
+                      {getStatusTag(booking.status)}
+                    </div>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Cancel Booking</DialogTitle>
-        <DialogContent>Are you sure you want to cancel this booking?</DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>No</Button>
-          <Button color="error" onClick={() => selectedBooking && handleCancelBooking(selectedBooking.bookingId)} autoFocus>
-            Yes, Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+                    {/* Location Information */}
+                    <div
+                      style={{
+                        background: "rgba(255, 255, 255, 0.05)",
+                        padding: "10px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <Space direction="vertical" size="small">
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <EnvironmentOutlined style={{ color: "#52c41a" }} />
+                          <Text style={{ color: colors.text }}>From: {booking.pickupLocation}</Text>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <EnvironmentOutlined style={{ color: "#f5222d" }} />
+                          <Text style={{ color: colors.text }}>To: {booking.dropLocation}</Text>
+                        </div>
+                      </Space>
+                    </div>
 
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarMessage.includes("success") ? "success" : "error"} sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+                    {/* Driver Information */}
+                    {booking.assignedDriver && (
+                      <div
+                        style={{
+                          background: "rgba(108, 99, 255, 0.1)",
+                          padding: "12px",
+                          borderRadius: "10px",
+                          border: "1px solid rgba(108, 99, 255, 0.2)",
+                        }}
+                      >
+                        <Space direction="vertical" size="small">
+                          <Text style={{ color: colors.text, fontWeight: "bold" }}>Driver Details</Text>
+                          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                            <CarOutlined style={{ color: colors.primary }} />
+                            <Text style={{ color: colors.text }}>{booking.assignedDriver.name}</Text>
+                          </div>
+                          <Text style={{ color: colors.text, fontSize: "12px" }}>📞 {booking.assignedDriver.phone}</Text>
+                        </Space>
+                      </div>
+                    )}
+
+                    <Space direction="vertical" size="small" style={{ width: "100%" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <Text style={{ color: colors.text }}>
+                          <ClockCircleOutlined /> {booking.date} at {booking.time}
+                        </Text>
+                        <Text style={{ color: colors.text }}>
+                          <DollarOutlined /> LKR. {booking.price}.00
+                        </Text>
+                      </div>
+                    </Space>
+
+                    {booking.status !== "CANCELLED" && (
+                      <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleOpenDialog(booking)} style={{ width: "100%" }}>
+                        Cancel Booking
+                      </Button>
+                    )}
+                  </Space>
+                </Card>
+              </List.Item>
+            )}
+          />
+        </Space>
+
+        <Modal
+          title="Cancel Booking"
+          open={openDialog}
+          onOk={() => {
+            if (selectedBooking) {
+              handleCancelBooking(selectedBooking.bookingId);
+              message.info(snackbarMessage);
+            }
+          }}
+          onCancel={() => setOpenDialog(false)}
+          okText="Yes, Cancel"
+          cancelText="No"
+        >
+          <Text>Are you sure you want to cancel this booking?</Text>
+        </Modal>
+      </Content>
+    </Layout>
   );
 };
 

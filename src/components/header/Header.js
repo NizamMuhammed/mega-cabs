@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Layout, Menu, Button, Avatar, Dropdown, Modal, Space, Typography } from "antd";
-import { LogoutOutlined, UserOutlined, CarOutlined, DashboardOutlined, DownOutlined } from "@ant-design/icons";
+import { Layout, Menu, Button, Avatar, Dropdown, Modal, Space, Typography, Drawer } from "antd";
+import { LogoutOutlined, UserOutlined, MenuOutlined, DownOutlined } from "@ant-design/icons";
+import { useMediaQuery } from "react-responsive"; // Add this import at the top
 
 const { Header: AntHeader } = Layout;
 const { Text } = Typography;
@@ -31,10 +32,12 @@ const headerStyles = {
 const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
   const [showReloginDialog, setShowReloginDialog] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // For getting the current route
   const isCustomer = userRoles.includes("CUSTOMER");
   const isAdmin = userRoles.includes("ADMIN");
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const menuItems = [
     {
@@ -106,6 +109,7 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
     localStorage.removeItem("userId");
     localStorage.removeItem("roles");
     setIsAuth(false);
+    setShowLogoutDialog(false);
     navigate("/login");
   };
 
@@ -163,7 +167,7 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
       <AntHeader
         style={{
           background: colors.background,
-          padding: "0 24px",
+          padding: "0 16px",
           position: "fixed",
           width: "100%",
           zIndex: 1000,
@@ -178,89 +182,53 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
             height: "100%",
           }}
         >
-          <Link
-            to="/"
-            style={{
-              ...headerStyles.link,
-              fontSize: "24px",
-              fontWeight: "bold",
-            }}
-          >
+          <Link to="/" style={{ ...headerStyles.link, fontSize: isMobile ? "20px" : "24px", fontWeight: "bold" }}>
             MegaCabs
           </Link>
 
-          <Menu
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            style={{
-              background: "transparent",
-              border: "none",
-              flex: 1,
-              justifyContent: "center",
-            }}
-            items={menuItems.map((item) => ({
-              key: item.path,
-              label: (
-                <Link
-                  to={item.path}
-                  style={{
-                    color: colors.text,
-                    textDecoration: "none",
-                  }}
-                >
-                  {item.label}
-                </Link>
-              ),
-            }))}
-          />
+          {/* Desktop Menu */}
+          {!isMobile && (
+            <Menu
+              mode="horizontal"
+              selectedKeys={[location.pathname]}
+              style={{
+                background: "transparent",
+                border: "none",
+                flex: 1,
+                justifyContent: "center",
+              }}
+              items={menuItems.map((item) => ({
+                key: item.path,
+                label: (
+                  <Link to={item.path} style={{ color: colors.text, textDecoration: "none" }}>
+                    {item.label}
+                  </Link>
+                ),
+              }))}
+            />
+          )}
 
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <Button
+              icon={<MenuOutlined />}
+              style={{
+                marginRight: "12px",
+                background: "transparent",
+                border: "none",
+                color: colors.text,
+              }}
+              onClick={() => setMobileMenuVisible(true)}
+            />
+          )}
+
+          {/* Auth Button/Profile */}
           {isAuth ? (
-            <Dropdown
-              menu={profileMenu}
-              placement="bottomRight"
-              trigger={["click"]}
-              dropdownRender={(menu) => (
-                <div
-                  style={{
-                    backgroundColor: colors.background,
-                    border: `1px solid ${colors.primary}20`,
-                    borderRadius: "8px",
-                    boxShadow: "0 6px 16px rgba(0,0,0,0.5)",
-                    minWidth: "200px",
-                  }}
-                >
-                  {menu}
-                </div>
-              )}
-            >
-              <Space
-                style={{
-                  cursor: "pointer",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    backgroundColor: `${colors.primary}15`,
-                  },
-                }}
-              >
-                <Avatar
-                  style={{
-                    backgroundColor: colors.primary,
-                    verticalAlign: "middle",
-                  }}
-                >
-                  {userName?.charAt(0)?.toUpperCase()}
-                </Avatar>
-                <span style={{ color: colors.text }}>{userName}</span>
-                <DownOutlined
-                  style={{
-                    fontSize: "12px",
-                    color: colors.text,
-                    opacity: 0.7,
-                    transition: "transform 0.3s",
-                  }}
-                />
+            <Dropdown menu={profileMenu} placement="bottomRight" trigger={["click"]}>
+              <Space style={{ cursor: "pointer" }}>
+                <Avatar style={{ backgroundColor: colors.primary }}>{userName?.charAt(0)?.toUpperCase()}</Avatar>
+                {!isMobile && <span style={{ color: colors.text }}>{userName}</span>}
+                <DownOutlined style={{ fontSize: "12px", color: colors.text }} />
               </Space>
             </Dropdown>
           ) : (
@@ -277,6 +245,32 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
           )}
         </div>
       </AntHeader>
+
+      {/* Mobile Navigation Drawer */}
+      <Drawer
+        title="Menu"
+        placement="left"
+        onClose={() => setMobileMenuVisible(false)}
+        open={mobileMenuVisible}
+        styles={{
+          header: { background: colors.background, color: colors.text },
+          body: { background: colors.background, padding: 0 },
+        }}
+      >
+        <Menu
+          mode="vertical"
+          selectedKeys={[location.pathname]}
+          style={{ background: "transparent", border: "none" }}
+          items={menuItems.map((item) => ({
+            key: item.path,
+            label: (
+              <Link to={item.path} onClick={() => setMobileMenuVisible(false)} style={{ color: colors.text }}>
+                {item.label}
+              </Link>
+            ),
+          }))}
+        />
+      </Drawer>
 
       <Modal title="Confirm Logout" open={showLogoutDialog} onOk={handleLogout} onCancel={() => setShowLogoutDialog(false)}>
         <p>Are you sure you want to logout?</p>
