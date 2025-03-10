@@ -17,12 +17,22 @@ const CarList = () => {
   const userRoles = JSON.parse(localStorage.getItem("roles") || "[]");
   const isAuthorized = userRoles.includes("ADMIN"); // Changed this line
   const navigate = useNavigate();
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const fetchCars = async () => {
+  const fetchCars = async (page = 0, pageSize = 10) => {
     setLoading(true);
     try {
-      const response = await carService.getAllCars();
-      setCars(response.data);
+      const response = await carService.getAllCars(page, pageSize);
+      setCars(response.data.content);
+      setPagination({
+        current: page + 1,
+        pageSize: pageSize,
+        total: response.data.totalElements,
+      });
     } catch (error) {
       message.error("Failed to fetch cars");
     }
@@ -179,7 +189,18 @@ const CarList = () => {
             </Space>
           </div>
 
-          <Table columns={columns} dataSource={cars} loading={loading} rowKey={(record) => record.carId} pagination={{ pageSize: 10 }} />
+          <Table
+            columns={columns}
+            dataSource={cars}
+            loading={loading}
+            rowKey={(record) => record.carId}
+            pagination={{
+              ...pagination,
+              onChange: (page, pageSize) => {
+                fetchCars(page - 1, pageSize);
+              },
+            }}
+          />
 
           <Modal title="Add New Car" open={isModalVisible} onOk={handleModalOk} onCancel={handleModalCancel} confirmLoading={loading} width={600}>
             <AddCarForm form={form} />

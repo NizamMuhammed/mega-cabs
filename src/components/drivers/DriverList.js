@@ -19,7 +19,9 @@ const DriverList = () => {
     setLoading(true);
     try {
       const response = await driverService.getAllDrivers();
-      setDrivers(response.data);
+      // Sort drivers by driverId in descending order to show newest first
+      const sortedDrivers = response.data.sort((a, b) => b.driverId - a.driverId);
+      setDrivers(sortedDrivers);
     } catch (error) {
       message.error("Failed to fetch drivers");
     }

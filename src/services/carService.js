@@ -3,8 +3,8 @@ import api from "../api/axiosConfig";
 const CAR_API_BASE_URL = "/api/v1/cars";
 
 const carService = {
-  getAllCars: () => {
-    return api.get(CAR_API_BASE_URL);
+  getAllCars: (page = 0, size = 10) => {
+    return api.get(`${CAR_API_BASE_URL}?page=${page}&size=${size}`);
   },
 
   getCarById: (carId) => {

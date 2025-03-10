@@ -40,21 +40,25 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const menuItems = [
-    {
-      key: "home",
-      label: "Home",
-      path: "/",
-    },
-    {
-      key: "about",
-      label: "About",
-      path: "/about",
-    },
-    {
-      key: "help",
-      label: "Help",
-      path: "/help",
-    },
+    ...(!isAdmin
+      ? [
+          {
+            key: "home",
+            label: "Home",
+            path: "/",
+          },
+          {
+            key: "about",
+            label: "About",
+            path: "/about",
+          },
+          {
+            key: "help",
+            label: "Help",
+            path: "/help",
+          },
+        ]
+      : []),
     ...(isAuth && isCustomer
       ? [
           {
@@ -71,6 +75,11 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
       : []),
     ...(isAdmin
       ? [
+          {
+            key: "admin-dashboard",
+            label: "Dashboard",
+            path: "/admin/dashboard",
+          },
           {
             key: "bookings",
             label: "All Bookings",
