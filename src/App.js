@@ -18,6 +18,7 @@ import DriverList from "./components/drivers/DriverList";
 import BookingList from "./components/bookings/BookingList";
 import AdminBookings from "./Pages/admin/AdminBookings";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import Reports from "./Pages/admin/Reports";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -66,6 +67,14 @@ function App() {
           element={
             <ProtectedRoute roles={["ADMIN", "CUSTOMER"]}>
               <AdminBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <Reports />
             </ProtectedRoute>
           }
         />
