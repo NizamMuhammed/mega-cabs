@@ -20,6 +20,7 @@ import AdminBookings from "./Pages/admin/AdminBookings";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Reports from "./Pages/admin/Reports";
 import Help from "./Pages/Help";
+import ManageUsers from "./Pages/auth/Admin/ManageUsers";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -76,6 +77,14 @@ function App() {
           element={
             <ProtectedRoute roles={["ADMIN"]}>
               <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <ManageUsers />
             </ProtectedRoute>
           }
         />

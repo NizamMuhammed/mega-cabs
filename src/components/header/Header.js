@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Layout, Menu, Button, Avatar, Dropdown, Modal, Space, Typography, Drawer } from "antd";
-import { LogoutOutlined, UserOutlined, MenuOutlined, DownOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined, MenuOutlined, DownOutlined, TeamOutlined } from "@ant-design/icons";
 import { useMediaQuery } from "react-responsive"; // Add this import at the top
 
 const { Header: AntHeader } = Layout;
@@ -95,26 +95,45 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
             label: "Manage Drivers",
             path: "/drivers",
           },
+          {
+            key: "manageUsers",
+            path: "/admin/users",
+            label: "Manage Users",
+          },
         ]
       : []),
   ];
 
   useEffect(() => {
-    if (isAuth) {
-      const token = localStorage.getItem("jwtToken");
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          const expTime = payload.exp * 1000; // convert to milliseconds
-          if (Date.now() >= expTime) {
-            setShowReloginDialog(true);
+    const checkTokenExpiration = () => {
+      if (isAuth) {
+        const token = localStorage.getItem("jwtToken");
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const expTime = payload.exp * 1000; // convert to milliseconds
+            const currentTime = Date.now();
+            const timeToExpire = expTime - currentTime;
+
+            // If token is expired or will expire in next 5 seconds
+            if (timeToExpire <= 5000) {
+              console.log(`Token expired/expiring. Difference: ${timeToExpire}ms`);
+              setShowReloginDialog(true);
+              handleLogout();
+            } else {
+              // Set timeout to check again just before expiration
+              const timeout = setTimeout(checkTokenExpiration, timeToExpire - 5000);
+              return () => clearTimeout(timeout);
+            }
+          } catch (error) {
+            console.error("Error parsing JWT:", error);
             handleLogout();
           }
-        } catch (error) {
-          console.error("Error parsing JWT:", error);
         }
       }
-    }
+    };
+
+    checkTokenExpiration();
   }, [isAuth]);
 
   const handleLogout = () => {
@@ -294,12 +313,13 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
         title="Session Expired"
         open={showReloginDialog}
         onOk={handleRelogin}
-        onCancel={() => setShowReloginDialog(false)}
-        footer={[
-          <Button key="login" type="primary" onClick={handleRelogin}>
-            Login
-          </Button>,
-        ]}
+        onCancel={() => {
+          setShowReloginDialog(false);
+          navigate("/login");
+        }}
+        closable={false}
+        maskClosable={false}
+        keyboard={false}
       >
         <p>Your session has expired. Please login again to continue.</p>
       </Modal>
