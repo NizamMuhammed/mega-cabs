@@ -37,10 +37,11 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
   const location = useLocation(); // For getting the current route
   const isCustomer = userRoles.includes("CUSTOMER");
   const isAdmin = userRoles.includes("ADMIN");
+  const isDriver = userRoles.includes("DRIVER");
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const menuItems = [
-    ...(!isAdmin
+    ...(!isAdmin && !isDriver
       ? [
           {
             key: "home",
@@ -99,6 +100,15 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
             key: "manageUsers",
             path: "/admin/users",
             label: "Manage Users",
+          },
+        ]
+      : []),
+    ...(isDriver
+      ? [
+          {
+            key: "driver-dashboard",
+            label: "Dashboard",
+            path: "/driver/dashboard",
           },
         ]
       : []),
