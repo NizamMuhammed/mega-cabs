@@ -7,6 +7,7 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: true, // Add this line
+  timeout: 5000, // Add timeout
 });
 
 api.interceptors.request.use(
@@ -18,13 +19,14 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     console.error("API Error:", error.response?.data);
 
     if (error.response) {
@@ -46,8 +48,10 @@ api.interceptors.response.use(
         default:
           message.error(error.response.data.message || "An error occurred");
       }
-    } else {
+    } else if (error.code === "ERR_NETWORK") {
+      console.error("Network Error - Server may be down");
       message.error("Network error occurred");
+      // Implement retry logic here if needed
     }
     return Promise.reject(error);
   }

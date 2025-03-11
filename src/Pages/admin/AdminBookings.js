@@ -91,11 +91,13 @@ const AdminBookings = () => {
       key: "action",
       render: (_, record) => (
         <Select style={{ width: 160 }} placeholder="Select driver" onChange={(value) => handleAssignDriver(record.bookingId, value)} defaultValue={record.driverId || undefined}>
-          {drivers.map((driver) => (
-            <Option key={driver.driverId} value={driver.driverId}>
-              {driver.driverName}
-            </Option>
-          ))}
+          {drivers
+            .filter((driver) => driver.driverStatus === "AVAILABLE")
+            .map((driver) => (
+              <Option key={driver.driverId} value={driver.driverId}>
+                {driver.driverName}
+              </Option>
+            ))}
         </Select>
       ),
     },
