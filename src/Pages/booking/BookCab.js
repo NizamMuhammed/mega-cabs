@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axiosConfig";
-import { Box, Typography, TextField, Button, Grid, MenuItem, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Typography, TextField, Button, Grid, MenuItem, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -21,6 +21,7 @@ const BookCab = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [bookingValues, setBookingValues] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
 
@@ -44,12 +45,18 @@ const BookCab = () => {
   ];
 
   const getCabs = async () => {
+    setLoading(true);
     try {
       const response = await api.get("/api/v1/cars");
-      const availableCabs = response.data.filter((cab) => cab.isAvailable === true);
+      // Ensure response.data is an array before filtering
+      const carsData = Array.isArray(response.data) ? response.data : response.data.content ? response.data.content : [];
+      const availableCabs = carsData.filter((cab) => cab.isAvailable === true);
       setCabs(availableCabs);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching cabs:", error);
+      setCabs([]); // Set empty array on error
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -351,12 +358,18 @@ const BookCab = () => {
                       },
                     }}
                   >
-                    {cabs.map((cab) => (
-                      <MenuItem key={cab.carId} value={cab.carName}>
-                        <img src={cab.carImage} alt={`${cab.carBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
-                        {cab.carBrand} {cab.carName} ({cab.carType})
-                      </MenuItem>
-                    ))}
+                    {loading ? (
+                      <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+                        <CircularProgress sx={{ color: colors.primary }} />
+                      </Box>
+                    ) : (
+                      cabs.map((cab) => (
+                        <MenuItem key={cab.carId} value={cab.carName}>
+                          <img src={cab.carImage} alt={`${cab.carBrand} image`} style={{ width: "50px", height: "30px", marginRight: "10px" }} />
+                          {cab.carBrand} {cab.carName} ({cab.carType})
+                        </MenuItem>
+                      ))
+                    )}
                   </TextField>
                   <ErrorMessage name="cabType" component="div" style={{ color: "red" }} />
                 </Grid>

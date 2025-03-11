@@ -121,7 +121,9 @@ const AdminBookings = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Typography.Title level={2}>All Bookings</Typography.Title>
+      <Typography.Title level={2} style={{ color: "white" }}>
+        All Bookings
+      </Typography.Title>
       <Table columns={columns} dataSource={bookings} loading={loading} rowKey="bookingId" />
     </div>
   );

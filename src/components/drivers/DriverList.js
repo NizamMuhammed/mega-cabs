@@ -74,21 +74,26 @@ const DriverList = () => {
       setLoading(true);
 
       const tempPassword = generateRandomPassword();
-      console.log("Generated password:", tempPassword); // For debugging
+      console.log("Generated password for", values.driverName, ":", tempPassword);
 
-      // Create driver user account
+      // First create user account
       const userResponse = await api.post("/api/v1/auth/register", {
         userName: values.driverName,
         userEmailId: values.driverEmailId,
-        userPassword: tempPassword, // Send raw password, let server encode it
+        userPassword: tempPassword,
         roles: ["DRIVER"],
       });
 
-      // Then create the driver profile
+      // Then create driver profile
       const driverData = {
-        ...values,
-        userId: userResponse.data.userId,
+        licenseNumber: values.licenseNumber,
+        driverPhone: values.driverPhone,
+        driverStatus: values.driverStatus || "AVAILABLE",
+        user: {
+          userId: userResponse.data.userId,
+        },
       };
+
       await driverService.createDriver(driverData);
 
       message.success("Driver added successfully");
@@ -104,11 +109,33 @@ const DriverList = () => {
   };
 
   const columns = [
-    { title: "Name", dataIndex: "driverName", key: "driverName" },
-    { title: "License Number", dataIndex: "licenseNumber", key: "licenseNumber" },
-    { title: "Email", dataIndex: "driverEmailId", key: "driverEmailId" },
-    { title: "Phone", dataIndex: "driverPhone", key: "driverPhone" },
-    { title: "Status", dataIndex: "driverStatus", key: "driverStatus" },
+    {
+      title: "Name",
+      dataIndex: ["user", "userName"],
+      key: "userName",
+      render: (_, record) => record.user?.userName || "-",
+    },
+    {
+      title: "Email",
+      dataIndex: ["user", "userEmailId"],
+      key: "userEmailId",
+      render: (_, record) => record.user?.userEmailId || "-",
+    },
+    {
+      title: "License Number",
+      dataIndex: "licenseNumber",
+      key: "licenseNumber",
+    },
+    {
+      title: "Phone",
+      dataIndex: "driverPhone",
+      key: "driverPhone",
+    },
+    {
+      title: "Status",
+      dataIndex: "driverStatus",
+      key: "driverStatus",
+    },
     {
       title: "Action",
       key: "action",
