@@ -1,6 +1,7 @@
+// d:\SE\mega-cabs\frontend\src\Pages\auth\Dashboard.js
 import React, { useState, useEffect } from "react";
-import { Layout, Typography, Card, List, Button, Tag, Space, Modal, message } from "antd";
-import { CarOutlined, ClockCircleOutlined, CheckCircleOutlined, EnvironmentOutlined, DollarOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Layout, Typography, Card, List, Button, Tag, Space, Modal, message, Descriptions } from "antd";
+import { CarOutlined, ClockCircleOutlined, CheckCircleOutlined, EnvironmentOutlined, DollarOutlined, DeleteOutlined, FileTextOutlined } from "@ant-design/icons";
 import api from "../../api/axiosConfig";
 import driverService from "../../services/driverService";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +26,8 @@ const Dashboard = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const [isBillModalVisible, setIsBillModalVisible] = useState(false);
+  const [currentBillBooking, setCurrentBillBooking] = useState(null);
 
   const fetchDriverDetails = async (bookings) => {
     const updatedBookings = await Promise.all(
@@ -117,11 +120,26 @@ const Dashboard = () => {
     );
   };
 
+  const showBillModal = (booking) => {
+    setCurrentBillBooking(booking);
+    setIsBillModalVisible(true);
+  };
+
+  const handleBillModalCancel = () => {
+    setIsBillModalVisible(false);
+  };
+
   return (
     <Layout style={{ background: colors.background }}>
       <Content style={{ padding: "2rem" }}>
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Title level={2} style={{ color: colors.text, margin: 0 }}>
               Your Bookings
             </Title>
@@ -151,8 +169,19 @@ const Dashboard = () => {
                   hoverable
                 >
                   <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <Text style={{ color: colors.text, fontSize: "16px", fontWeight: "bold" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                        }}
+                      >
                         Cab Type: {booking.cabBrand}
                         {booking.cabType}
                         {booking.cabName}
@@ -169,11 +198,23 @@ const Dashboard = () => {
                       }}
                     >
                       <Space direction="vertical" size="small">
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
                           <EnvironmentOutlined style={{ color: "#52c41a" }} />
                           <Text style={{ color: colors.text }}>From: {booking.pickupLocation}</Text>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
                           <EnvironmentOutlined style={{ color: "#f5222d" }} />
                           <Text style={{ color: colors.text }}>To: {booking.dropLocation}</Text>
                         </div>
@@ -191,8 +232,21 @@ const Dashboard = () => {
                         }}
                       >
                         <Space direction="vertical" size="small">
-                          <Text style={{ color: colors.text, fontWeight: "bold" }}>Driver Details</Text>
-                          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <Text
+                            style={{
+                              color: colors.text,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Driver Details
+                          </Text>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "8px",
+                              alignItems: "center",
+                            }}
+                          >
                             <CarOutlined style={{ color: colors.primary }} />
                             <Text style={{ color: colors.text }}>{booking.assignedDriver.name}</Text>
                           </div>
@@ -202,7 +256,12 @@ const Dashboard = () => {
                     )}
 
                     <Space direction="vertical" size="small" style={{ width: "100%" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <Text style={{ color: colors.text }}>
                           <ClockCircleOutlined /> {booking.date} at {booking.time}
                         </Text>
@@ -212,11 +271,25 @@ const Dashboard = () => {
                       </div>
                     </Space>
 
-                    {booking.status !== "CANCELLED" && (
-                      <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleOpenDialog(booking)} style={{ width: "100%" }}>
-                        Cancel Booking
-                      </Button>
-                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      {booking.status !== "CANCELLED" && (
+                        <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleOpenDialog(booking)} style={{ width: "48%" }}>
+                          Cancel Booking
+                        </Button>
+                      )}
+
+                      {booking.status === "COMPLETED" && (
+                        <Button type="primary" icon={<FileTextOutlined />} onClick={() => showBillModal(booking)} style={{ width: "48%" }}>
+                          View Bill
+                        </Button>
+                      )}
+                    </div>
                   </Space>
                 </Card>
               </List.Item>
@@ -238,6 +311,48 @@ const Dashboard = () => {
           cancelText="No"
         >
           <Text>Are you sure you want to cancel this booking?</Text>
+        </Modal>
+        {/* Bill Modal */}
+        <Modal
+          title="Bill Details"
+          open={isBillModalVisible}
+          onCancel={handleBillModalCancel}
+          footer={[
+            <Button key="back" onClick={handleBillModalCancel}>
+              Close
+            </Button>,
+          ]}
+        >
+          {currentBillBooking && (
+            <Descriptions bordered>
+              <Descriptions.Item label="Booking ID" span={3}>
+                {currentBillBooking.bookingId}
+              </Descriptions.Item>
+              <Descriptions.Item label="Cab Type" span={3}>
+                {currentBillBooking.cabBrand} {currentBillBooking.cabType} {currentBillBooking.cabName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Pickup Location" span={3}>
+                {currentBillBooking.pickupLocation}
+              </Descriptions.Item>
+              <Descriptions.Item label="Drop Location" span={3}>
+                {currentBillBooking.dropLocation}
+              </Descriptions.Item>
+              <Descriptions.Item label="Date" span={3}>
+                {currentBillBooking.date}
+              </Descriptions.Item>
+              <Descriptions.Item label="Time" span={3}>
+                {currentBillBooking.time}
+              </Descriptions.Item>
+              {currentBillBooking.assignedDriver && (
+                <Descriptions.Item label="Driver Details" span={3}>
+                  {currentBillBooking.assignedDriver.name} - 📞 {currentBillBooking.assignedDriver.phone}
+                </Descriptions.Item>
+              )}
+              <Descriptions.Item label="Total Price" span={3}>
+                LKR. {currentBillBooking.price}.00
+              </Descriptions.Item>
+            </Descriptions>
+          )}
         </Modal>
       </Content>
     </Layout>
