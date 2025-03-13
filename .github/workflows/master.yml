@@ -3,10 +3,10 @@ name: React CI/CD
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch (or your default branch)
+      - master # Trigger on pushes to the main branch (or your default branch)
   pull_request:
     branches:
-      - main # Trigger on pull requests to the main branch
+      - master # Trigger on pull requests to the main branch
 
 jobs:
   build-and-test:
