@@ -61,4 +61,4 @@ jobs:
           echo "Deploying the application"
           # Example: Deploy to AWS S3 using the AWS CLI
           # aws s3 sync ./build s3://your-bucket-name --delete
-          # or deploy to firebase etc.
+          # or deploy to firebase etc. 
