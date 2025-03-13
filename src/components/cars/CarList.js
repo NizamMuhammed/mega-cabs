@@ -178,7 +178,7 @@ const CarList = () => {
       {isAuthorized ? (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <h2>Cars Management</h2>
+            <h2>Car Management</h2>
             <Space>
               <Button icon={<ReloadOutlined />} onClick={fetchCars} loading={loading}>
                 Refresh

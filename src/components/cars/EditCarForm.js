@@ -97,14 +97,6 @@ const EditCarForm = ({ form, initialValues }) => {
           )}
         </Dragger>
       </Form.Item>
-
-      <Form.Item name="carCapacity" label="Capacity" rules={[{ required: true, message: "Please enter car capacity" }]}>
-        <Input />
-      </Form.Item>
-
-      <Form.Item name="carDescription" label="Description" rules={[{ required: true, message: "Please enter car description" }]}>
-        <Input.TextArea rows={4} />
-      </Form.Item>
     </Form>
   );
 };

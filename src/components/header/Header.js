@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Layout, Menu, Button, Avatar, Dropdown, Modal, Space, Typography, Drawer } from "antd";
-import { LogoutOutlined, UserOutlined, MenuOutlined, DownOutlined, TeamOutlined } from "@ant-design/icons";
+import { LogoutOutlined, CarOutlined, MenuOutlined, DownOutlined, TeamOutlined } from "@ant-design/icons";
 import { useMediaQuery } from "react-responsive"; // Add this import at the top
 
 const { Header: AntHeader } = Layout;
@@ -226,7 +226,7 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
           }}
         >
           <Link to="/" style={{ ...headerStyles.link, fontSize: isMobile ? "20px" : "24px", fontWeight: "bold" }}>
-            MegaCabs
+            <CarOutlined /> MegaCityCabs
           </Link>
 
           {/* Desktop Menu */}

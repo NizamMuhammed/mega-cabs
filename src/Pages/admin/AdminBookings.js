@@ -73,13 +73,12 @@ const AdminBookings = () => {
   };
 
   const columns = [
-    { title: "User", dataIndex: "userId", key: "userId" },
     { title: "Pickup", dataIndex: "pickupLocation", key: "pickupLocation" },
     { title: "Drop", dataIndex: "dropLocation", key: "dropLocation" },
     { title: "Date", dataIndex: "date", key: "date" },
     { title: "Time", dataIndex: "time", key: "time" },
     { title: "Cab Type", dataIndex: "cabType", key: "cabType" },
-    { title: "Price", dataIndex: "price", key: "price" },
+    { title: "Price", dataIndex: "price", key: "price", render: (price) => `LKR ${price}.00` },
     {
       title: "Status",
       dataIndex: "status",

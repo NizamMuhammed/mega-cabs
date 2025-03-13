@@ -60,7 +60,7 @@ const Home = () => {
                   fontWeight: "800",
                 }}
               >
-                Mega Cabs
+                MegaCityCabs
               </Title>
               <Paragraph
                 style={{
@@ -72,28 +72,32 @@ const Home = () => {
               >
                 Experience the Future of Transportation
               </Paragraph>
-              <Button
-                type="primary"
-                size="large"
-                shape="round"
-                style={{
-                  background: `linear-gradient(45deg, ${colors.primary}, ${colors.secondary})`,
-                  height: "60px",
-                  width: "220px",
-                  fontSize: "1.2rem",
-                  border: "none",
-                  boxShadow: "0 10px 20px rgba(108, 99, 255, 0.2)",
-                  transition: "all 0.3s ease",
-                }}
-                hover={{
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 15px 30px rgba(108, 99, 255, 0.3)",
-                }}
-                component={Link}
-                to="/book-cab"
-              >
-                Book Now
-              </Button>
+              <Link to="/book-cab">
+                <Button
+                  type="primary"
+                  size="large"
+                  shape="round"
+                  style={{
+                    background: `linear-gradient(45deg, ${colors.primary}, ${colors.secondary})`,
+                    height: "60px",
+                    width: "220px",
+                    fontSize: "1.2rem",
+                    border: "none",
+                    boxShadow: "0 10px 20px rgba(108, 99, 255, 0.2)",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 15px 30px rgba(108, 99, 255, 0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "0 10px 20px rgba(108, 99, 255, 0.2)";
+                  }}
+                >
+                  Book Now
+                </Button>
+              </Link>
             </Col>
           </Row>
         </div>

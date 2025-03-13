@@ -58,7 +58,7 @@ function App() {
         <Route path="/about" element={<About />} />
         {/* Protected Customer Routes */}
         <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Navigate to="/" />} />
-        <Route path="/book-cab" element={isAuth ? <BookCab /> : <Navigate to="/" />} />
+        <Route path="/book-cab" element={isAuth ? <BookCab /> : <Navigate to="/login" />} />
         <Route path="/bookings" element={isAuth && (isCustomer || isAdmin) ? <BookingList /> : <Navigate to="/" />} />
         {/* Protected Admin Routes */}
         <Route path="/admin/dashboard" element={isAuth && isAdmin ? <AdminDashboard /> : <Navigate to="/" />} />
