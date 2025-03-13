@@ -46,7 +46,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' # Only run on pushes to main
+    if: github.ref == 'refs/heads/master' # Only run on pushes to main
 
     steps:
       - name: Download Artifacts
