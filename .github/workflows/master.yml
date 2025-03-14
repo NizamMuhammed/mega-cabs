@@ -36,11 +36,11 @@ jobs:
       - name: Build
         run: npm run build # or yarn build
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: build # The directory where the build files are
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build
+      #     path: build # The directory where the build files are
 
   deploy:
     needs: build-and-test
