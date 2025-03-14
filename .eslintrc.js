@@ -26,5 +26,8 @@ module.exports = {
   plugins: ["react"],
   rules: {
     "react/prop-types": 0, //add this
+    "no-unused-vars": "warn", // Change this line
+    "no-useless-escape": "warn", // Change this line
+    "react/no-unescaped-entities": "warn", //Change this line
   },
 };
