@@ -101,6 +101,11 @@ const Header = ({ isAuth, userName, setIsAuth, userRoles }) => {
             path: "/admin/users",
             label: "Manage Users",
           },
+          {
+            key: "Reports",
+            path: "/admin/reports",
+            label: "Reports",
+          },
         ]
       : []),
     ...(isDriver
