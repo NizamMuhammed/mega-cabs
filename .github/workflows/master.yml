@@ -1,12 +1,12 @@
-name: React CI/CD
+name: Build and Test
 
 on:
   push:
     branches:
-      - master # Trigger on pushes to the main branch (or your default branch)
+      - master # or your main development branch
   pull_request:
     branches:
-      - master # Trigger on pull requests to the main branch
+      - master
 
 jobs:
   build-and-test:
@@ -14,50 +14,45 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] # Specify your Node.js version
+        node-version: [16.x, 18.x, 20.x] # Test across multiple Node.js versions
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm' # Caches node modules to speed up builds
 
-      - name: Install Dependencies
-        run: npm install # or yarn install
+      - name: Install dependencies
+        run: npm ci # Use npm ci for clean installs (recommended for CI/CD)
 
-      - name: Run ESLint
-        run: npm run lint #if you have eslint
+      - name: Run tests
+        run: npm test
 
-      
+      - name: Build for production
+        run: npm run build
 
-      - name: Build
-        run: npm run build # or yarn build
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: build
-      #     path: build # The directory where the build files are
-
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' # Only run on pushes to main
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
+      - name: Artifact upload
+        uses: actions/upload-artifact@v3
         with:
-          name: build
-          path: build
+          name: production-build
+          path: ./build # This is the directory your `npm run build` produces
 
-      - name: Deploy to your server
-        #replace with your deployement method
-        run: |
-          echo "Deploying the application"
-          # Example: Deploy to AWS S3 using the AWS CLI
-          # aws s3 sync ./build s3://your-bucket-name --delete
-          # or deploy to firebase etc.
+  # example deploy job
+  # deploy:
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: production-build
+  #         path: ./build_to_deploy
+  #     - name: Deploy to hosting provider
+  #       #... your deployment steps here
+  #       run: |
+  #         echo "Implement deployment here"
+  #         ls -l build_to_deploy
