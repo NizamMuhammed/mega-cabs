@@ -41,18 +41,17 @@ jobs:
           name: production-build
           path: ./build # This is the directory your `npm run build` produces
 
-  # example deploy job
-  # deploy:
-  #   needs: build-and-test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: production-build
-  #         path: ./build_to_deploy
-  #     - name: Deploy to hosting provider
-  #       #... your deployment steps here
-  #       run: |
-  #         echo "Implement deployment here"
-  #         ls -l build_to_deploy
+  deploy:
+    needs: build-and-test # Ensure this job runs after `build-and-test`
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: production-build
+          path: ./build_to_deploy
+
+      - name: Deploy to hosting provider
+        run: |
+          echo "Implement deployment here"
+          ls -l ./build_to_deploy
