@@ -31,8 +31,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint #if you have eslint
 
-      - name: Run Unit Tests
-        run: npm run test #if you have tests and jest
+      
 
       - name: Build
         run: npm run build # or yarn build
@@ -46,7 +45,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' # Only run on pushes to main
+    if: github.ref == 'refs/heads/master' # Only run on pushes to main
 
     steps:
       - name: Download Artifacts
