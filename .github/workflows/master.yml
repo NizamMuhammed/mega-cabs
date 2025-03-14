@@ -48,15 +48,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: production-build  # Artifact name must match the upload name
-          path: ./build_to_deploy  # Path where the artifact will be downloaded
-
-      - name: Verify artifact download
-        run: ls -l ./build_to_deploy  # Verify that the artifact was downloaded
-
+     
       - name: Deploy to hosting provider
         run: |
           echo "Implement your deployment logic here"
