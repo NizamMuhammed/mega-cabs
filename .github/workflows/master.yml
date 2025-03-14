@@ -3,7 +3,7 @@ name: Build and Test
 on:
   push:
     branches:
-      - master
+      - master # or your main development branch
   pull_request:
     branches:
       - master
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [16.x, 18.x, 20.x]  # Test across multiple Node.js versions
 
     steps:
       - name: Checkout code
@@ -23,10 +23,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'npm'  # Caches node modules to speed up builds
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci  # Use npm ci for clean installs (recommended for CI/CD)
 
       - name: Run tests
         run: npm test
@@ -34,27 +34,31 @@ jobs:
       - name: Build for production
         run: npm run build
 
-      - name: List build directory contents  # Verify directory contents
-        run: ls -l ./build
+      - name: List build directory contents  # Verify build directory
+        run: ls -l ./build  # Ensure `./build` directory is created
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: production-build
-          path: ./build
+          path: ./build  # Upload the build directory
 
   deploy:
-    needs: build-and-test
+    needs: build-and-test  # Ensure this job runs after `build-and-test` job
     runs-on: ubuntu-latest
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: production-build
-          path: ./build_to_deploy
+          name: production-build  # Artifact name must match the upload name
+          path: ./build_to_deploy  # Path where the artifact will be downloaded
+
+      - name: Verify artifact download
+        run: ls -l ./build_to_deploy  # Verify that the artifact was downloaded
 
       - name: Deploy to hosting provider
         run: |
-          echo "Deploying application"
-          ls -l ./build_to_deploy  # Verify artifact was downloaded
+          echo "Implement your deployment logic here"
+          # Example: Deploy to your hosting provider
+          ls -l ./build_to_deploy  # List files to verify the correct files are present
