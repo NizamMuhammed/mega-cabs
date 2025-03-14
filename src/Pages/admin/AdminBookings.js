@@ -8,7 +8,6 @@ const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
     fetchBookings();

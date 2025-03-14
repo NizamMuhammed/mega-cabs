@@ -1,6 +1,6 @@
 import "antd/dist/reset.css";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/home/Home";
 import Login from "./Pages/auth/Login";
 import Register from "./Pages/auth/Register";
