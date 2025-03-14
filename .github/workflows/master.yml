@@ -34,12 +34,6 @@ jobs:
       - name: List build directory contents  # Verify build directory
         run: ls -l ./build  # Ensure `./build` directory is created
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: production-build
-          path: ./build  # Upload the build directory
-
   deploy:
     needs: build-and-test  # Ensure this job runs after `build-and-test` job
     runs-on: ubuntu-latest
